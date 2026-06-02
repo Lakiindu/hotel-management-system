@@ -2,18 +2,18 @@
 
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\FrontendController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', function () {
-    return view('welcome');
-});
+// Front Page
+Route::get('/', [FrontendController::class, 'home'])->name('home');
 
-// Changed this route
+// Dashboard Redirect
 Route::get('/dashboard', [DashboardController::class, 'redirect'])
     ->middleware(['auth', 'verified'])
     ->name('dashboard');
 
-// Added admin/customer dashboard routes
+// Admin & Customer Dashboards
 Route::middleware(['auth'])->group(function () {
     Route::get('/admin/dashboard', [DashboardController::class, 'adminDashboard'])
         ->name('admin.dashboard');
@@ -22,6 +22,7 @@ Route::middleware(['auth'])->group(function () {
         ->name('customer.dashboard');
 });
 
+// Profile Routes
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
