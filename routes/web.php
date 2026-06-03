@@ -6,6 +6,8 @@ use App\Http\Controllers\FrontendController;
 use App\Http\Controllers\Admin\RoomController;
 use App\Http\Controllers\Admin\BookingController as AdminBookingController;
 use App\Http\Controllers\Customer\BookingController as CustomerBookingController;
+use App\Http\Controllers\Customer\PaymentController as CustomerPaymentController;
+use App\Http\Controllers\Admin\PaymentController as AdminPaymentController;
 use Illuminate\Support\Facades\Route;
 
 // Front Page
@@ -34,6 +36,12 @@ Route::middleware(['auth', 'admin'])
 
         Route::patch('/bookings/{booking}/status', [AdminBookingController::class, 'updateStatus'])
             ->name('bookings.updateStatus');
+
+        Route::get('/payments', [AdminPaymentController::class, 'index'])
+            ->name('payments.index');
+
+        Route::patch('/payments/{payment}/confirm', [AdminPaymentController::class, 'confirm'])
+            ->name('payments.confirm');
     });
 
 // Customer Routes
@@ -59,6 +67,22 @@ Route::middleware(['auth'])
 
         Route::patch('/bookings/{booking}/cancel', [CustomerBookingController::class, 'cancel'])
             ->name('bookings.cancel');
+
+        Route::get('/payments', [CustomerPaymentController::class, 'index'])
+            ->name('payments.index');
+
+        Route::patch('/payments/{payment}/pay', [CustomerPaymentController::class, 'pay'])
+            ->name('payments.pay');
+
+        Route::get('/payments/{payment}/invoice', [CustomerPaymentController::class, 'invoice'])
+            ->name('payments.invoice');
+
+        // Demo Card Gateway Routes
+        Route::get('/payments/{payment}/card', [CustomerPaymentController::class, 'cardForm'])
+            ->name('payments.card');
+
+        Route::post('/payments/{payment}/card', [CustomerPaymentController::class, 'processCard'])
+            ->name('payments.card.process');
     });
 
 // Profile Routes

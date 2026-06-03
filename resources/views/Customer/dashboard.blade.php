@@ -84,7 +84,7 @@
                 </p>
             </a>
 
-            <a href="#"
+            <a href="{{ route('customer.payments.index') }}"
                class="bg-white p-6 rounded-2xl shadow hover:shadow-lg transition">
                 <h3 class="text-xl font-bold text-slate-800">
                     Payments

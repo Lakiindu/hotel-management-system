@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Booking;
+use App\Models\Payment;
 use Illuminate\Http\Request;
 
 class BookingController extends Controller
@@ -32,15 +33,38 @@ class BookingController extends Controller
             'status' => $request->status,
         ]);
 
+        // Create payment record when booking is approved
+        if ($request->status === 'approved') {
+            Payment::firstOrCreate(
+                [
+                    'booking_id' => $booking->id,
+                ],
+                [
+                    'amount' => $booking->total_amount,
+                    'payment_method' => 'cash',
+                    'status' => 'pending',
+                ]
+            );
+        }
+
         if ($request->status === 'checked_in') {
-            $booking->room->update(['status' => 'occupied']);
+            $booking->room->update([
+                'status' => 'occupied'
+            ]);
         }
 
-        if ($request->status === 'checked_out' || $request->status === 'completed' || $request->status === 'cancelled') {
-            $booking->room->update(['status' => 'available']);
+        if (
+            $request->status === 'checked_out' ||
+            $request->status === 'completed' ||
+            $request->status === 'cancelled'
+        ) {
+            $booking->room->update([
+                'status' => 'available'
+            ]);
         }
 
-        return redirect()->route('admin.bookings.index')
+        return redirect()
+            ->route('admin.bookings.index')
             ->with('success', 'Booking status updated successfully.');
     }
 }
