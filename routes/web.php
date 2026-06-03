@@ -13,11 +13,14 @@ Route::get('/dashboard', [DashboardController::class, 'redirect'])
     ->middleware(['auth', 'verified'])
     ->name('dashboard');
 
-// Admin & Customer Dashboards
-Route::middleware(['auth'])->group(function () {
+// Admin Dashboard - only admin can access
+Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('/admin/dashboard', [DashboardController::class, 'adminDashboard'])
         ->name('admin.dashboard');
+});
 
+// Customer Dashboard - any logged-in user can access
+Route::middleware(['auth'])->group(function () {
     Route::get('/customer/dashboard', [DashboardController::class, 'customerDashboard'])
         ->name('customer.dashboard');
 });
