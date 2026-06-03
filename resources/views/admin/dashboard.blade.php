@@ -13,13 +13,28 @@
         <h1 class="text-2xl font-bold mb-8">Hotel Admin</h1>
 
         <nav class="space-y-3">
-            <a href="#" class="block bg-blue-600 px-4 py-2 rounded-lg">Dashboard</a>
-            <a href="#" class="block hover:bg-slate-800 px-4 py-2 rounded-lg">Rooms</a>
-            <a href="#" class="block hover:bg-slate-800 px-4 py-2 rounded-lg">Bookings</a>
-            <a href="#" class="block hover:bg-slate-800 px-4 py-2 rounded-lg">Customers</a>
-            <a href="#" class="block hover:bg-slate-800 px-4 py-2 rounded-lg">Payments</a>
-            <a href="#" class="block hover:bg-slate-800 px-4 py-2 rounded-lg">Reports</a>
-        </nav>
+    <a href="#" class="block bg-blue-600 px-4 py-2 rounded-lg">Dashboard</a>
+
+    <a href="#" class="block hover:bg-slate-800 px-4 py-2 rounded-lg">
+        Rooms
+    </a>
+
+    <a href="{{ route('admin.bookings.index') }}" class="block hover:bg-slate-800 px-4 py-2 rounded-lg">
+        Bookings
+    </a>
+
+    <a href="#" class="block hover:bg-slate-800 px-4 py-2 rounded-lg">
+        Customers
+    </a>
+
+    <a href="#" class="block hover:bg-slate-800 px-4 py-2 rounded-lg">
+        Payments
+    </a>
+
+    <a href="#" class="block hover:bg-slate-800 px-4 py-2 rounded-lg">
+        Reports
+    </a>
+</nav>
     </aside>
 
     <main class="flex-1 p-8">
