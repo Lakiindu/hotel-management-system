@@ -49,7 +49,7 @@ class BookingController extends Controller
 
         if ($request->status === 'checked_in') {
             $booking->room->update([
-                'status' => 'occupied'
+                'status' => 'occupied',
             ]);
         }
 
@@ -59,7 +59,16 @@ class BookingController extends Controller
             $request->status === 'cancelled'
         ) {
             $booking->room->update([
-                'status' => 'available'
+                'status' => 'available',
+            ]);
+        }
+
+        // AJAX / JSON response
+        if ($request->expectsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Booking status updated successfully.',
+                'status' => $booking->status,
             ]);
         }
 

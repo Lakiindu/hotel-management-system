@@ -17,8 +17,14 @@ use Illuminate\Support\Facades\Route;
 
 // Front Page
 Route::get('/', [FrontendController::class, 'home'])->name('home');
+
 Route::get('/rooms', [FrontendController::class, 'rooms'])->name('rooms');
+
 Route::get('/rooms/{room}', [FrontendController::class, 'roomDetails'])->name('rooms.details');
+
+// AJAX Rooms Route
+Route::get('/ajax/rooms', [FrontendController::class, 'ajaxRooms'])
+    ->name('ajax.rooms');
 
 // Dashboard Redirect
 Route::get('/dashboard', [DashboardController::class, 'redirect'])

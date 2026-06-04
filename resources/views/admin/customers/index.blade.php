@@ -2,7 +2,11 @@
 <html>
 <head>
     <title>Customer Management</title>
+
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 
 <body class="bg-slate-100">
@@ -12,24 +16,23 @@
     <aside class="w-64 bg-slate-950 text-white p-6">
         <h1 class="text-2xl font-bold mb-8">Hotel Admin</h1>
 
-        
         <nav class="space-y-3">
 
-    <a href="{{ route('admin.dashboard') }}" class="block hover:bg-slate-800 px-4 py-2 rounded-lg">Dashboard</a>
+            <a href="{{ route('admin.dashboard') }}" class="block hover:bg-slate-800 px-4 py-2 rounded-lg">Dashboard</a>
 
-    <a href="{{ route('admin.rooms.index') }}" class="block hover:bg-slate-800 px-4 py-2 rounded-lg">Rooms</a>
+            <a href="{{ route('admin.rooms.index') }}" class="block hover:bg-slate-800 px-4 py-2 rounded-lg">Rooms</a>
 
-    <a href="{{ route('admin.bookings.index') }}" class="block hover:bg-slate-800 px-4 py-2 rounded-lg">Bookings</a>
+            <a href="{{ route('admin.bookings.index') }}" class="block hover:bg-slate-800 px-4 py-2 rounded-lg">Bookings</a>
 
-    <a href="{{ route('admin.customers.index') }}" class="block hover:bg-slate-800 px-4 py-2 rounded-lg">Customers</a>
+            <a href="{{ route('admin.customers.index') }}" class="block hover:bg-slate-800 px-4 py-2 rounded-lg">Customers</a>
 
-    <a href="{{ route('admin.payments.index') }}" class="block hover:bg-slate-800 px-4 py-2 rounded-lg">Payments</a>
+            <a href="{{ route('admin.payments.index') }}" class="block hover:bg-slate-800 px-4 py-2 rounded-lg">Payments</a>
 
-    <a href="{{ route('admin.reviews.index') }}" class="block hover:bg-slate-800 px-4 py-2 rounded-lg">Reviews</a>
+            <a href="{{ route('admin.reviews.index') }}" class="block hover:bg-slate-800 px-4 py-2 rounded-lg">Reviews</a>
 
-    <a href="{{ route('admin.reports.index') }}" class="block hover:bg-slate-800 px-4 py-2 rounded-lg">Reports</a>
-    
-    </nav>
+            <a href="{{ route('admin.reports.index') }}" class="block hover:bg-slate-800 px-4 py-2 rounded-lg">Reports</a>
+
+        </nav>
     </aside>
 
     <main class="flex-1 p-8">
@@ -70,8 +73,8 @@
                     class="border rounded-xl px-4 py-3">
 
                 <option value="">All</option>
-                <option value="1">Active</option>
-                <option value="0">Inactive</option>
+                <option value="1" {{ $status === '1' ? 'selected' : '' }}>Active</option>
+                <option value="0" {{ $status === '0' ? 'selected' : '' }}>Inactive</option>
 
             </select>
 
@@ -143,7 +146,8 @@
                                 @csrf
                                 @method('PATCH')
 
-                                <button class="bg-amber-500 text-white px-4 py-2 rounded-lg">
+                                <button type="button"
+                                        class="toggle-btn bg-amber-500 text-white px-4 py-2 rounded-lg">
                                     {{ $customer->is_active ? 'Deactivate' : 'Activate' }}
                                 </button>
                             </form>
@@ -160,9 +164,52 @@
 
         </div>
 
+        <div class="mt-6">
+            {{ $customers->links() }}
+        </div>
+
     </main>
 
 </div>
+
+<script>
+    document.querySelectorAll('.toggle-btn').forEach(button => {
+        button.addEventListener('click', function () {
+            const form = this.closest('form');
+
+            Swal.fire({
+                title: 'Update customer status?',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: 'Yes',
+                cancelButtonText: 'Cancel'
+            }).then(result => {
+                if (result.isConfirmed) {
+                    fetch(form.action, {
+                        method: 'POST',
+                        headers: {
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                            'Accept': 'application/json'
+                        },
+                        body: new FormData(form)
+                    })
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data.success) {
+                            Swal.fire('Success', data.message, 'success')
+                                .then(() => location.reload());
+                        } else {
+                            Swal.fire('Error', 'Could not update customer status.', 'error');
+                        }
+                    })
+                    .catch(() => {
+                        Swal.fire('Error', 'Something went wrong.', 'error');
+                    });
+                }
+            });
+        });
+    });
+</script>
 
 </body>
 </html>

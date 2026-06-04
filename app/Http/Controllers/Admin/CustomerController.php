@@ -15,8 +15,10 @@ class CustomerController extends Controller
 
         $customers = User::where('role', 'customer')
             ->when($search, function ($query) use ($search) {
-                $query->where('name', 'like', "%{$search}%")
-                    ->orWhere('email', 'like', "%{$search}%");
+                $query->where(function ($q) use ($search) {
+                    $q->where('name', 'like', "%{$search}%")
+                      ->orWhere('email', 'like', "%{$search}%");
+                });
             })
             ->when($status !== null && $status !== '', function ($query) use ($status) {
                 $query->where('is_active', $status);
@@ -25,8 +27,14 @@ class CustomerController extends Controller
             ->paginate(10);
 
         $totalCustomers = User::where('role', 'customer')->count();
-        $activeCustomers = User::where('role', 'customer')->where('is_active', 1)->count();
-        $inactiveCustomers = User::where('role', 'customer')->where('is_active', 0)->count();
+
+        $activeCustomers = User::where('role', 'customer')
+            ->where('is_active', 1)
+            ->count();
+
+        $inactiveCustomers = User::where('role', 'customer')
+            ->where('is_active', 0)
+            ->count();
 
         return view('admin.customers.index', compact(
             'customers',
@@ -48,14 +56,21 @@ class CustomerController extends Controller
     public function toggleStatus(User $user)
     {
         $user->update([
-            'is_active' => !$user->is_active
+            'is_active' => !$user->is_active,
         ]);
 
-        return back()->with(
-            'success',
-            $user->is_active
-                ? 'Customer activated successfully.'
-                : 'Customer deactivated successfully.'
-        );
+        $message = $user->is_active
+            ? 'Customer activated successfully.'
+            : 'Customer deactivated successfully.';
+
+        if (request()->expectsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => $message,
+                'is_active' => $user->is_active,
+            ]);
+        }
+
+        return back()->with('success', $message);
     }
 }

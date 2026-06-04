@@ -21,8 +21,10 @@ class FrontendController extends Controller
     {
         $rooms = Room::query()
             ->when($request->search, function ($query) use ($request) {
-                $query->where('room_number', 'like', "%{$request->search}%")
-                    ->orWhere('room_type', 'like', "%{$request->search}%");
+                $query->where(function ($q) use ($request) {
+                    $q->where('room_number', 'like', "%{$request->search}%")
+                      ->orWhere('room_type', 'like', "%{$request->search}%");
+                });
             })
             ->when($request->type, function ($query) use ($request) {
                 $query->where('room_type', $request->type);
@@ -33,7 +35,9 @@ class FrontendController extends Controller
             ->latest()
             ->paginate(6);
 
-        $roomTypes = Room::select('room_type')->distinct()->pluck('room_type');
+        $roomTypes = Room::select('room_type')
+            ->distinct()
+            ->pluck('room_type');
 
         return view('frontend.rooms', compact('rooms', 'roomTypes'));
     }
@@ -41,5 +45,29 @@ class FrontendController extends Controller
     public function roomDetails(Room $room)
     {
         return view('frontend.room-details', compact('room'));
+    }
+
+    public function ajaxRooms(Request $request)
+    {
+        $rooms = Room::query()
+            ->when($request->search, function ($query) use ($request) {
+                $query->where(function ($q) use ($request) {
+                    $q->where('room_number', 'like', "%{$request->search}%")
+                      ->orWhere('room_type', 'like', "%{$request->search}%");
+                });
+            })
+            ->when($request->type, function ($query) use ($request) {
+                $query->where('room_type', $request->type);
+            })
+            ->when($request->status, function ($query) use ($request) {
+                $query->where('status', $request->status);
+            })
+            ->latest()
+            ->get();
+
+        return response()->json([
+            'success' => true,
+            'rooms' => $rooms,
+        ]);
     }
 }

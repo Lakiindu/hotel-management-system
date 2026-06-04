@@ -2,9 +2,13 @@
 <html>
 <head>
     <title>Review Management</title>
+
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
+
 <body class="bg-slate-100">
 
 <div class="flex min-h-screen">
@@ -28,7 +32,7 @@
     <a href="{{ route('admin.reviews.index') }}" class="block hover:bg-slate-800 px-4 py-2 rounded-lg">Reviews</a>
 
     <a href="{{ route('admin.reports.index') }}" class="block hover:bg-slate-800 px-4 py-2 rounded-lg">Reports</a>
-    
+
     </nav>
     </aside>
 
@@ -106,21 +110,58 @@
 </div>
 
 <script>
-    document.querySelectorAll('.delete-btn').forEach(button => {
-        button.addEventListener('click', function () {
-            Swal.fire({
-                title: 'Delete this review?',
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonText: 'Yes, delete',
-                cancelButtonText: 'Cancel'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    this.closest('form').submit();
-                }
-            });
+document.querySelectorAll('.delete-btn').forEach(button => {
+    button.addEventListener('click', function () {
+
+        let form = this.closest('form');
+
+        Swal.fire({
+            title: 'Delete this review?',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Yes, delete'
+        }).then(result => {
+
+            if (result.isConfirmed) {
+
+                fetch(form.action, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                        'Accept': 'application/json'
+                    },
+                    body: new FormData(form)
+                })
+                .then(res => res.json())
+                .then(data => {
+
+                    if (data.success) {
+
+                        Swal.fire(
+                            'Success',
+                            data.message,
+                            'success'
+                        ).then(() => location.reload());
+
+                    }
+
+                })
+                .catch(() => {
+
+                    Swal.fire(
+                        'Error',
+                        'Something went wrong.',
+                        'error'
+                    );
+
+                });
+
+            }
+
         });
+
     });
+});
 </script>
 
 </body>

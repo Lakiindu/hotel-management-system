@@ -17,9 +17,17 @@ class ReviewController extends Controller
     }
 
     public function destroy(Review $review)
-    {
-        $review->delete();
+{
+    $review->delete();
 
-        return back()->with('success', 'Review deleted successfully.');
+    if (request()->expectsJson()) {
+        return response()->json([
+            'success' => true,
+            'message' => 'Review deleted successfully.'
+        ]);
     }
+
+    return back()->with('success',
+     'Review deleted successfully.');
+}
 }
