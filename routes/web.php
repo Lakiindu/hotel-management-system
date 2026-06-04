@@ -8,6 +8,8 @@ use App\Http\Controllers\Admin\BookingController as AdminBookingController;
 use App\Http\Controllers\Customer\BookingController as CustomerBookingController;
 use App\Http\Controllers\Customer\PaymentController as CustomerPaymentController;
 use App\Http\Controllers\Admin\PaymentController as AdminPaymentController;
+use App\Http\Controllers\Customer\ReviewController as CustomerReviewController;
+use App\Http\Controllers\Admin\ReviewController as AdminReviewController;
 use Illuminate\Support\Facades\Route;
 
 // Front Page
@@ -42,6 +44,12 @@ Route::middleware(['auth', 'admin'])
 
         Route::patch('/payments/{payment}/confirm', [AdminPaymentController::class, 'confirm'])
             ->name('payments.confirm');
+
+        Route::get('/reviews', [AdminReviewController::class, 'index'])
+            ->name('reviews.index');
+
+        Route::delete('/reviews/{review}', [AdminReviewController::class, 'destroy'])
+            ->name('reviews.destroy');
     });
 
 // Customer Routes
@@ -68,6 +76,12 @@ Route::middleware(['auth'])
         Route::patch('/bookings/{booking}/cancel', [CustomerBookingController::class, 'cancel'])
             ->name('bookings.cancel');
 
+        Route::get('/bookings/{booking}/review', [CustomerReviewController::class, 'create'])
+            ->name('reviews.create');
+
+        Route::post('/bookings/{booking}/review', [CustomerReviewController::class, 'store'])
+            ->name('reviews.store');
+
         Route::get('/payments', [CustomerPaymentController::class, 'index'])
             ->name('payments.index');
 
@@ -77,7 +91,6 @@ Route::middleware(['auth'])
         Route::get('/payments/{payment}/invoice', [CustomerPaymentController::class, 'invoice'])
             ->name('payments.invoice');
 
-        // Demo Card Gateway Routes
         Route::get('/payments/{payment}/card', [CustomerPaymentController::class, 'cardForm'])
             ->name('payments.card');
 

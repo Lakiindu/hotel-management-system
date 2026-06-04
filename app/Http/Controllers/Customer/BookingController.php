@@ -59,7 +59,7 @@ class BookingController extends Controller
 
     public function index()
     {
-        $bookings = Booking::with('room')
+        $bookings = Booking::with(['room', 'review'])
             ->where('user_id', Auth::id())
             ->latest()
             ->paginate(8);

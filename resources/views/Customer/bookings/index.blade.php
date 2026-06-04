@@ -76,10 +76,18 @@
                         </td>
 
                         <td class="p-4 flex gap-2">
+
                             <a href="{{ route('customer.bookings.show', $booking->id) }}"
                                class="bg-slate-950 text-white px-4 py-2 rounded-lg">
                                 View
                             </a>
+
+                            @if($booking->status === 'completed' && !$booking->review)
+                                <a href="{{ route('customer.reviews.create', $booking->id) }}"
+                                   class="bg-green-600 text-white px-4 py-2 rounded-lg">
+                                    Review
+                                </a>
+                            @endif
 
                             @if(in_array($booking->status, ['pending', 'approved']))
                                 <form method="POST"
@@ -94,6 +102,7 @@
                                     </button>
                                 </form>
                             @endif
+
                         </td>
                     </tr>
                 @empty
