@@ -12,6 +12,7 @@ use App\Http\Controllers\Admin\PaymentController as AdminPaymentController;
 use App\Http\Controllers\Customer\ReviewController as CustomerReviewController;
 use App\Http\Controllers\Admin\ReviewController as AdminReviewController;
 use App\Http\Controllers\Customer\ProfileController as CustomerProfileController;
+use App\Http\Controllers\Admin\ReportController;
 use Illuminate\Support\Facades\Route;
 
 // Front Page
@@ -61,6 +62,15 @@ Route::middleware(['auth', 'admin'])
 
         Route::delete('/reviews/{review}', [AdminReviewController::class, 'destroy'])
             ->name('reviews.destroy');
+
+        Route::get('/reports', [ReportController::class, 'index'])
+            ->name('reports.index');
+
+        Route::get('/reports/export/csv', [ReportController::class, 'exportCsv'])
+            ->name('reports.export.csv');
+
+        Route::get('/reports/export/pdf', [ReportController::class, 'exportPdf'])
+            ->name('reports.export.pdf');
     });
 
 // Customer Routes

@@ -3,6 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Booking;
+use App\Models\Payment;
+use App\Models\Room;
+use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 
 class DashboardController extends Controller
@@ -17,27 +20,31 @@ class DashboardController extends Controller
     }
 
     public function adminDashboard()
-{
-    $totalRooms = \App\Models\Room::count();
-    $availableRooms = \App\Models\Room::where('status', 'available')->count();
-    $occupiedRooms = \App\Models\Room::where('status', 'occupied')->count();
+    {
+        $totalRooms = Room::count();
 
-    $totalCustomers = \App\Models\User::where('role', 'customer')->count();
-    $totalBookings = \App\Models\Booking::count();
-    $pendingBookings = \App\Models\Booking::where('status', 'pending')->count();
+        $availableRooms = Room::where('status', 'available')->count();
 
-    $totalRevenue = \App\Models\Payment::where('status', 'paid')->sum('amount');
+        $occupiedRooms = Room::where('status', 'occupied')->count();
 
-    return view('admin.dashboard', compact(
-        'totalRooms',
-        'availableRooms',
-        'occupiedRooms',
-        'totalCustomers',
-        'totalBookings',
-        'pendingBookings',
-        'totalRevenue'
-    ));
-}
+        $totalCustomers = User::where('role', 'customer')->count();
+
+        $totalBookings = Booking::count();
+
+        $pendingBookings = Booking::where('status', 'pending')->count();
+
+        $totalRevenue = Payment::where('status', 'paid')->sum('amount');
+
+        return view('admin.dashboard', compact(
+            'totalRooms',
+            'availableRooms',
+            'occupiedRooms',
+            'totalCustomers',
+            'totalBookings',
+            'pendingBookings',
+            'totalRevenue'
+        ));
+    }
 
     public function customerDashboard()
     {
