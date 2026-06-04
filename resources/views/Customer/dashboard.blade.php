@@ -62,7 +62,7 @@
 
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
 
             <a href="{{ route('rooms') }}"
                class="bg-white p-6 rounded-2xl shadow hover:shadow-lg transition">
@@ -91,6 +91,16 @@
                 </h3>
                 <p class="text-slate-500">
                     View payment history
+                </p>
+            </a>
+
+            <a href="{{ route('customer.profile.edit') }}"
+               class="bg-white p-6 rounded-2xl shadow hover:shadow-lg transition">
+                <h3 class="text-xl font-bold text-slate-800">
+                    Profile
+                </h3>
+                <p class="text-slate-500">
+                    Manage your account
                 </p>
             </a>
 

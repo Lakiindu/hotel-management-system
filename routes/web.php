@@ -4,12 +4,14 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\FrontendController;
 use App\Http\Controllers\Admin\RoomController;
+use App\Http\Controllers\Admin\CustomerController;
 use App\Http\Controllers\Admin\BookingController as AdminBookingController;
 use App\Http\Controllers\Customer\BookingController as CustomerBookingController;
 use App\Http\Controllers\Customer\PaymentController as CustomerPaymentController;
 use App\Http\Controllers\Admin\PaymentController as AdminPaymentController;
 use App\Http\Controllers\Customer\ReviewController as CustomerReviewController;
 use App\Http\Controllers\Admin\ReviewController as AdminReviewController;
+use App\Http\Controllers\Customer\ProfileController as CustomerProfileController;
 use Illuminate\Support\Facades\Route;
 
 // Front Page
@@ -32,6 +34,15 @@ Route::middleware(['auth', 'admin'])
             ->name('dashboard');
 
         Route::resource('rooms', RoomController::class);
+
+        Route::get('/customers', [CustomerController::class, 'index'])
+            ->name('customers.index');
+
+        Route::get('/customers/{user}', [CustomerController::class, 'show'])
+            ->name('customers.show');
+
+        Route::patch('/customers/{user}/toggle-status', [CustomerController::class, 'toggleStatus'])
+            ->name('customers.toggleStatus');
 
         Route::get('/bookings', [AdminBookingController::class, 'index'])
             ->name('bookings.index');
@@ -96,6 +107,15 @@ Route::middleware(['auth'])
 
         Route::post('/payments/{payment}/card', [CustomerPaymentController::class, 'processCard'])
             ->name('payments.card.process');
+
+        Route::get('/profile', [CustomerProfileController::class, 'edit'])
+            ->name('profile.edit');
+
+        Route::put('/profile', [CustomerProfileController::class, 'update'])
+            ->name('profile.update');
+
+        Route::put('/profile/password', [CustomerProfileController::class, 'updatePassword'])
+            ->name('profile.password');
     });
 
 // Profile Routes
