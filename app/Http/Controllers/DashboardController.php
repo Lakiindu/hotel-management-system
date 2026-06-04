@@ -17,9 +17,27 @@ class DashboardController extends Controller
     }
 
     public function adminDashboard()
-    {
-        return view('admin.dashboard');
-    }
+{
+    $totalRooms = \App\Models\Room::count();
+    $availableRooms = \App\Models\Room::where('status', 'available')->count();
+    $occupiedRooms = \App\Models\Room::where('status', 'occupied')->count();
+
+    $totalCustomers = \App\Models\User::where('role', 'customer')->count();
+    $totalBookings = \App\Models\Booking::count();
+    $pendingBookings = \App\Models\Booking::where('status', 'pending')->count();
+
+    $totalRevenue = \App\Models\Payment::where('status', 'paid')->sum('amount');
+
+    return view('admin.dashboard', compact(
+        'totalRooms',
+        'availableRooms',
+        'occupiedRooms',
+        'totalCustomers',
+        'totalBookings',
+        'pendingBookings',
+        'totalRevenue'
+    ));
+}
 
     public function customerDashboard()
     {

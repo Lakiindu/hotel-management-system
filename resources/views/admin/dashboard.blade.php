@@ -14,35 +14,20 @@
 
         <nav class="space-y-3">
 
-            <a href="#" class="block bg-blue-600 px-4 py-2 rounded-lg">
-                Dashboard
-            </a>
+    <a href="{{ route('admin.dashboard') }}" class="block hover:bg-slate-800 px-4 py-2 rounded-lg">Dashboard</a>
 
-            <a href="#" class="block hover:bg-slate-800 px-4 py-2 rounded-lg">
-                Rooms
-            </a>
+    <a href="{{ route('admin.rooms.index') }}" class="block hover:bg-slate-800 px-4 py-2 rounded-lg">Rooms</a>
 
-            <a href="{{ route('admin.bookings.index') }}"
-               class="block hover:bg-slate-800 px-4 py-2 rounded-lg">
-                Bookings
-            </a>
+    <a href="{{ route('admin.bookings.index') }}" class="block hover:bg-slate-800 px-4 py-2 rounded-lg">Bookings</a>
 
-            <a href="#"
-               class="block hover:bg-slate-800 px-4 py-2 rounded-lg">
-                Customers
-            </a>
+    <a href="{{ route('admin.customers.index') }}" class="block hover:bg-slate-800 px-4 py-2 rounded-lg">Customers</a>
 
-            <a href="{{ route('admin.payments.index') }}"
-               class="block hover:bg-slate-800 px-4 py-2 rounded-lg">
-                Payments
-            </a>
+    <a href="{{ route('admin.payments.index') }}" class="block hover:bg-slate-800 px-4 py-2 rounded-lg">Payments</a>
 
-            <a href="#"
-               class="block hover:bg-slate-800 px-4 py-2 rounded-lg">
-                Reports
-            </a>
+    <a href="{{ route('admin.reviews.index') }}" class="block hover:bg-slate-800 px-4 py-2 rounded-lg">Reviews</a>
 
-        </nav>
+    </nav>
+
     </aside>
 
     <main class="flex-1 p-8">
@@ -65,21 +50,55 @@
             </form>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
 
             <div class="bg-white p-6 rounded-2xl shadow">
                 <p class="text-slate-500">Total Rooms</p>
-                <h3 class="text-3xl font-bold text-blue-600">3</h3>
+                <h3 class="text-3xl font-bold text-blue-600">
+                    {{ $totalRooms }}
+                </h3>
+            </div>
+
+            <div class="bg-white p-6 rounded-2xl shadow">
+                <p class="text-slate-500">Available Rooms</p>
+                <h3 class="text-3xl font-bold text-green-600">
+                    {{ $availableRooms }}
+                </h3>
+            </div>
+
+            <div class="bg-white p-6 rounded-2xl shadow">
+                <p class="text-slate-500">Occupied Rooms</p>
+                <h3 class="text-3xl font-bold text-red-600">
+                    {{ $occupiedRooms }}
+                </h3>
+            </div>
+
+            <div class="bg-white p-6 rounded-2xl shadow">
+                <p class="text-slate-500">Customers</p>
+                <h3 class="text-3xl font-bold text-cyan-600">
+                    {{ $totalCustomers }}
+                </h3>
             </div>
 
             <div class="bg-white p-6 rounded-2xl shadow">
                 <p class="text-slate-500">Total Bookings</p>
-                <h3 class="text-3xl font-bold text-green-600">0</h3>
+                <h3 class="text-3xl font-bold text-purple-600">
+                    {{ $totalBookings }}
+                </h3>
+            </div>
+
+            <div class="bg-white p-6 rounded-2xl shadow">
+                <p class="text-slate-500">Pending Bookings</p>
+                <h3 class="text-3xl font-bold text-yellow-500">
+                    {{ $pendingBookings }}
+                </h3>
             </div>
 
             <div class="bg-white p-6 rounded-2xl shadow">
                 <p class="text-slate-500">Revenue</p>
-                <h3 class="text-3xl font-bold text-purple-600">Rs. 0</h3>
+                <h3 class="text-3xl font-bold text-emerald-600">
+                    Rs. {{ number_format($totalRevenue, 2) }}
+                </h3>
             </div>
 
         </div>

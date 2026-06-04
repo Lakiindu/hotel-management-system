@@ -37,6 +37,28 @@ class BookingController extends Controller
             return back()->with('error', 'This room is not available right now.');
         }
 
+        $alreadyBooked = Booking::where('room_id', $room->id)
+            ->whereIn('status', ['pending', 'approved', 'checked_in'])
+            ->where(function ($query) use ($request) {
+                $query->whereBetween('check_in_date', [
+                    $request->check_in_date,
+                    $request->check_out_date,
+                ])
+                ->orWhereBetween('check_out_date', [
+                    $request->check_in_date,
+                    $request->check_out_date,
+                ])
+                ->orWhere(function ($query) use ($request) {
+                    $query->where('check_in_date', '<=', $request->check_in_date)
+                        ->where('check_out_date', '>=', $request->check_out_date);
+                });
+            })
+            ->exists();
+
+        if ($alreadyBooked) {
+            return back()->with('error', 'This room is already booked for the selected dates.');
+        }
+
         $days = Carbon::parse($request->check_in_date)
             ->diffInDays(Carbon::parse($request->check_out_date));
 

@@ -12,10 +12,22 @@
     <aside class="w-64 bg-slate-950 text-white p-6">
         <h1 class="text-2xl font-bold mb-8">Hotel Admin</h1>
 
+        
         <nav class="space-y-3">
-            <a href="{{ route('admin.dashboard') }}" class="block hover:bg-slate-800 px-4 py-2 rounded-lg">Dashboard</a>
-            <a href="{{ route('admin.customers.index') }}" class="block bg-blue-600 px-4 py-2 rounded-lg">Customers</a>
-        </nav>
+
+    <a href="{{ route('admin.dashboard') }}" class="block hover:bg-slate-800 px-4 py-2 rounded-lg">Dashboard</a>
+
+    <a href="{{ route('admin.rooms.index') }}" class="block hover:bg-slate-800 px-4 py-2 rounded-lg">Rooms</a>
+
+    <a href="{{ route('admin.bookings.index') }}" class="block hover:bg-slate-800 px-4 py-2 rounded-lg">Bookings</a>
+
+    <a href="{{ route('admin.customers.index') }}" class="block hover:bg-slate-800 px-4 py-2 rounded-lg">Customers</a>
+
+    <a href="{{ route('admin.payments.index') }}" class="block hover:bg-slate-800 px-4 py-2 rounded-lg">Payments</a>
+
+    <a href="{{ route('admin.reviews.index') }}" class="block hover:bg-slate-800 px-4 py-2 rounded-lg">Reviews</a>
+
+    </nav>
     </aside>
 
     <main class="flex-1 p-8">
