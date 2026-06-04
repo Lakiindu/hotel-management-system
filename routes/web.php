@@ -1,26 +1,30 @@
 <?php
 
-use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\FrontendController;
+
 use App\Http\Controllers\Admin\RoomController;
 use App\Http\Controllers\Admin\CustomerController;
 use App\Http\Controllers\Admin\BookingController as AdminBookingController;
+use App\Http\Controllers\Admin\PaymentController as AdminPaymentController;
+use App\Http\Controllers\Admin\ReviewController as AdminReviewController;
+use App\Http\Controllers\Admin\ReportController;
+
 use App\Http\Controllers\Customer\BookingController as CustomerBookingController;
 use App\Http\Controllers\Customer\PaymentController as CustomerPaymentController;
-use App\Http\Controllers\Admin\PaymentController as AdminPaymentController;
 use App\Http\Controllers\Customer\ReviewController as CustomerReviewController;
-use App\Http\Controllers\Admin\ReviewController as AdminReviewController;
 use App\Http\Controllers\Customer\ProfileController as CustomerProfileController;
-use App\Http\Controllers\Admin\ReportController;
+
 use Illuminate\Support\Facades\Route;
 
-// Front Page
+// Public Frontend Routes
 Route::get('/', [FrontendController::class, 'home'])->name('home');
 
-Route::get('/rooms', [FrontendController::class, 'rooms'])->name('rooms');
+Route::get('/rooms', [FrontendController::class, 'rooms'])
+    ->name('rooms');
 
-Route::get('/rooms/{room}', [FrontendController::class, 'roomDetails'])->name('rooms.details');
+Route::get('/rooms/{room}', [FrontendController::class, 'roomDetails'])
+    ->name('rooms.details');
 
 // AJAX Rooms Route
 Route::get('/ajax/rooms', [FrontendController::class, 'ajaxRooms'])
@@ -31,7 +35,7 @@ Route::get('/dashboard', [DashboardController::class, 'redirect'])
     ->middleware(['auth', 'verified'])
     ->name('dashboard');
 
-// Admin Routes - only admin can access
+// Admin Routes
 Route::middleware(['auth', 'admin'])
     ->prefix('admin')
     ->name('admin.')
@@ -132,19 +136,12 @@ Route::middleware(['auth'])
 
         Route::put('/profile/password', [CustomerProfileController::class, 'updatePassword'])
             ->name('profile.password');
+
+        Route::get('/payments/{payment}/invoice/pdf', [CustomerPaymentController::class, 'downloadInvoicePdf'])
+            ->name('payments.invoice.pdf');
+
+        Route::get('/payments/{payment}/invoice/csv', [CustomerPaymentController::class, 'downloadInvoiceCsv'])
+             ->name('payments.invoice.csv');
     });
 
-// Profile Routes
-Route::middleware('auth')->group(function () {
-
-    Route::get('/profile', [ProfileController::class, 'edit'])
-        ->name('profile.edit');
-
-    Route::patch('/profile', [ProfileController::class, 'update'])
-        ->name('profile.update');
-
-    Route::delete('/profile', [ProfileController::class, 'destroy'])
-        ->name('profile.destroy');
-});
-
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';

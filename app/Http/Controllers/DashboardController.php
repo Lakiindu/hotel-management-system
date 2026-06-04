@@ -47,34 +47,64 @@ class DashboardController extends Controller
     }
 
     public function customerDashboard()
-    {
-        $userId = Auth::id();
+{
+    $userId = Auth::id();
 
-        $totalBookings = Booking::where('user_id', $userId)->count();
+    $totalBookings = Booking::where('user_id', $userId)->count();
 
-        $pendingBookings = Booking::where('user_id', $userId)
-            ->where('status', 'pending')
-            ->count();
+    $pendingBookings = Booking::where('user_id', $userId)
+        ->where('status', 'pending')
+        ->count();
 
-        $upcomingStays = Booking::where('user_id', $userId)
-            ->whereIn('status', ['approved', 'checked_in'])
-            ->count();
+    $upcomingStays = Booking::where('user_id', $userId)
+        ->whereIn('status', ['approved', 'checked_in'])
+        ->count();
 
-        $completedStays = Booking::where('user_id', $userId)
-            ->where('status', 'completed')
-            ->count();
+    $completedStays = Booking::where('user_id', $userId)
+        ->where('status', 'completed')
+        ->count();
 
-        $latestBooking = Booking::with('room')
-            ->where('user_id', $userId)
-            ->latest()
-            ->first();
+    $latestBooking = Booking::with('room')
+        ->where('user_id', $userId)
+        ->latest()
+        ->first();
 
-        return view('customer.dashboard', compact(
-            'totalBookings',
-            'pendingBookings',
-            'upcomingStays',
-            'completedStays',
-            'latestBooking'
-        ));
-    }
+    $nextStay = Booking::with('room')
+        ->where('user_id', $userId)
+        ->whereIn('status', ['approved', 'checked_in'])
+        ->orderBy('check_in_date', 'asc')
+        ->first();
+
+    $recentBookings = Booking::with('room')
+        ->where('user_id', $userId)
+        ->latest()
+        ->take(3)
+        ->get();
+
+    $recentPayments = Payment::with('booking.room')
+        ->whereHas('booking', function ($query) use ($userId) {
+            $query->where('user_id', $userId);
+        })
+        ->latest()
+        ->take(3)
+        ->get();
+
+    $pendingPaymentAmount = Payment::where('status', 'pending')
+        ->whereHas('booking', function ($query) use ($userId) {
+            $query->where('user_id', $userId);
+        })
+        ->sum('amount');
+
+    return view('customer.dashboard', compact(
+        'totalBookings',
+        'pendingBookings',
+        'upcomingStays',
+        'completedStays',
+        'latestBooking',
+        'nextStay',
+        'recentBookings',
+        'recentPayments',
+        'pendingPaymentAmount'
+    ));
+}
 }
