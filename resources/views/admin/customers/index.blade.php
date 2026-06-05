@@ -1,109 +1,76 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Customer Management</title>
+@extends('layouts.admin')
 
-    <meta name="csrf-token" content="{{ csrf_token() }}">
+@section('title', 'Customer Management')
 
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-</head>
+@section('page-title', 'Customer Management')
 
-<body class="bg-slate-100">
+@section('page-subtitle', 'Search, view and manage registered hotel customers.')
 
-<div class="flex min-h-screen">
+@section('content')
 
-    <aside class="w-64 bg-slate-950 text-white p-6">
-        <h1 class="text-2xl font-bold mb-8">Hotel Admin</h1>
+<div class="grid md:grid-cols-3 gap-6 mb-8">
 
-        <nav class="space-y-3">
+    <div class="bg-white p-6 rounded-3xl shadow">
+        <p class="text-slate-500">Total Customers</p>
+        <h2 class="text-4xl font-extrabold text-blue-600">
+            {{ $totalCustomers }}
+        </h2>
+    </div>
 
-            <a href="{{ route('admin.dashboard') }}" class="block hover:bg-slate-800 px-4 py-2 rounded-lg">Dashboard</a>
+    <div class="bg-white p-6 rounded-3xl shadow">
+        <p class="text-slate-500">Active Customers</p>
+        <h2 class="text-4xl font-extrabold text-green-600">
+            {{ $activeCustomers }}
+        </h2>
+    </div>
 
-            <a href="{{ route('admin.rooms.index') }}" class="block hover:bg-slate-800 px-4 py-2 rounded-lg">Rooms</a>
+    <div class="bg-white p-6 rounded-3xl shadow">
+        <p class="text-slate-500">Inactive Customers</p>
+        <h2 class="text-4xl font-extrabold text-red-600">
+            {{ $inactiveCustomers }}
+        </h2>
+    </div>
 
-            <a href="{{ route('admin.bookings.index') }}" class="block hover:bg-slate-800 px-4 py-2 rounded-lg">Bookings</a>
+</div>
 
-            <a href="{{ route('admin.customers.index') }}" class="block hover:bg-slate-800 px-4 py-2 rounded-lg">Customers</a>
+<form method="GET"
+      class="bg-white p-5 rounded-3xl shadow mb-6 grid md:grid-cols-3 gap-4">
 
-            <a href="{{ route('admin.payments.index') }}" class="block hover:bg-slate-800 px-4 py-2 rounded-lg">Payments</a>
+    <input type="text"
+           name="search"
+           value="{{ $search }}"
+           placeholder="Search customer..."
+           class="border rounded-2xl px-4 py-3">
 
-            <a href="{{ route('admin.reviews.index') }}" class="block hover:bg-slate-800 px-4 py-2 rounded-lg">Reviews</a>
+    <select name="status"
+            class="border rounded-2xl px-4 py-3">
+        <option value="">All Status</option>
+        <option value="1" {{ $status === '1' ? 'selected' : '' }}>Active</option>
+        <option value="0" {{ $status === '0' ? 'selected' : '' }}>Inactive</option>
+    </select>
 
-            <a href="{{ route('admin.reports.index') }}" class="block hover:bg-slate-800 px-4 py-2 rounded-lg">Reports</a>
+    <button class="bg-slate-950 text-white px-6 py-3 rounded-2xl font-bold">
+        Search
+    </button>
 
-        </nav>
-    </aside>
+</form>
 
-    <main class="flex-1 p-8">
-
-        <h1 class="text-3xl font-bold mb-8">
-            Customer Management
-        </h1>
-
-        <div class="grid md:grid-cols-3 gap-6 mb-8">
-
-            <div class="bg-white p-6 rounded-2xl shadow">
-                <h3 class="text-slate-500">Total Customers</h3>
-                <p class="text-4xl font-bold">{{ $totalCustomers }}</p>
-            </div>
-
-            <div class="bg-white p-6 rounded-2xl shadow">
-                <h3 class="text-green-500">Active Customers</h3>
-                <p class="text-4xl font-bold">{{ $activeCustomers }}</p>
-            </div>
-
-            <div class="bg-white p-6 rounded-2xl shadow">
-                <h3 class="text-red-500">Inactive Customers</h3>
-                <p class="text-4xl font-bold">{{ $inactiveCustomers }}</p>
-            </div>
-
-        </div>
-
-        <form method="GET"
-              class="bg-white p-5 rounded-2xl shadow mb-6 flex gap-4">
-
-            <input type="text"
-                   name="search"
-                   value="{{ $search }}"
-                   placeholder="Search customer..."
-                   class="border rounded-xl px-4 py-3 flex-1">
-
-            <select name="status"
-                    class="border rounded-xl px-4 py-3">
-
-                <option value="">All</option>
-                <option value="1" {{ $status === '1' ? 'selected' : '' }}>Active</option>
-                <option value="0" {{ $status === '0' ? 'selected' : '' }}>Inactive</option>
-
-            </select>
-
-            <button class="bg-slate-950 text-white px-6 rounded-xl">
-                Search
-            </button>
-
-        </form>
-
-        <div class="bg-white rounded-2xl shadow overflow-hidden">
-
-            <table class="w-full">
-
-                <thead class="bg-slate-950 text-white">
-
+<div class="bg-white rounded-[2rem] shadow overflow-hidden">
+    <div class="overflow-x-auto">
+        <table class="w-full min-w-[800px]">
+            <thead class="bg-slate-950 text-white">
                 <tr>
                     <th class="p-4 text-left">Customer</th>
                     <th class="p-4 text-left">Phone</th>
                     <th class="p-4 text-left">Status</th>
                     <th class="p-4 text-left">Actions</th>
                 </tr>
+            </thead>
 
-                </thead>
+            <tbody>
+                @forelse($customers as $customer)
 
-                <tbody>
-
-                @foreach($customers as $customer)
-
-                    <tr class="border-b">
+                    <tr class="border-b hover:bg-slate-50">
 
                         <td class="p-4">
                             <p class="font-bold">{{ $customer->name }}</p>
@@ -117,99 +84,100 @@
                         </td>
 
                         <td class="p-4">
-
                             @if($customer->is_active)
-
-                                <span class="bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm">
+                                <span class="bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm font-semibold">
                                     Active
                                 </span>
-
                             @else
-
-                                <span class="bg-red-100 text-red-700 px-3 py-1 rounded-full text-sm">
+                                <span class="bg-red-100 text-red-700 px-3 py-1 rounded-full text-sm font-semibold">
                                     Inactive
                                 </span>
-
                             @endif
-
                         </td>
 
-                        <td class="p-4 flex gap-2">
+                        <td class="p-4">
+                            <div class="flex gap-2">
 
-                            <a href="{{ route('admin.customers.show', $customer->id) }}"
-                               class="bg-blue-600 text-white px-4 py-2 rounded-lg">
-                                View
-                            </a>
+                                <a href="{{ route('admin.customers.show', $customer->id) }}"
+                                   class="bg-blue-600 text-white px-4 py-2 rounded-xl font-bold">
+                                    View
+                                </a>
 
-                            <form method="POST"
-                                  action="{{ route('admin.customers.toggleStatus', $customer->id) }}">
-                                @csrf
-                                @method('PATCH')
+                                <form method="POST"
+                                      action="{{ route('admin.customers.toggleStatus', $customer->id) }}">
+                                    @csrf
+                                    @method('PATCH')
 
-                                <button type="button"
-                                        class="toggle-btn bg-amber-500 text-white px-4 py-2 rounded-lg">
-                                    {{ $customer->is_active ? 'Deactivate' : 'Activate' }}
-                                </button>
-                            </form>
+                                    <button type="button"
+                                            class="toggle-btn bg-amber-500 text-white px-4 py-2 rounded-xl font-bold">
+                                        {{ $customer->is_active ? 'Deactivate' : 'Activate' }}
+                                    </button>
+                                </form>
 
+                            </div>
                         </td>
 
                     </tr>
 
-                @endforeach
+                @empty
 
-                </tbody>
+                    <tr>
+                        <td colspan="4" class="p-8 text-center text-slate-500">
+                            No customers found.
+                        </td>
+                    </tr>
 
-            </table>
-
-        </div>
-
-        <div class="mt-6">
-            {{ $customers->links() }}
-        </div>
-
-    </main>
-
+                @endforelse
+            </tbody>
+        </table>
+    </div>
 </div>
 
-<script>
-    document.querySelectorAll('.toggle-btn').forEach(button => {
-        button.addEventListener('click', function () {
-            const form = this.closest('form');
+<div class="mt-6">
+    {{ $customers->links() }}
+</div>
 
-            Swal.fire({
-                title: 'Update customer status?',
-                icon: 'question',
-                showCancelButton: true,
-                confirmButtonText: 'Yes',
-                cancelButtonText: 'Cancel'
-            }).then(result => {
-                if (result.isConfirmed) {
-                    fetch(form.action, {
-                        method: 'POST',
-                        headers: {
-                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
-                            'Accept': 'application/json'
-                        },
-                        body: new FormData(form)
-                    })
-                    .then(res => res.json())
-                    .then(data => {
-                        if (data.success) {
-                            Swal.fire('Success', data.message, 'success')
-                                .then(() => location.reload());
-                        } else {
-                            Swal.fire('Error', 'Could not update customer status.', 'error');
-                        }
-                    })
-                    .catch(() => {
-                        Swal.fire('Error', 'Something went wrong.', 'error');
-                    });
-                }
-            });
+@endsection
+
+@push('scripts')
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+document.querySelectorAll('.toggle-btn').forEach(button => {
+    button.addEventListener('click', function () {
+        const form = this.closest('form');
+
+        Swal.fire({
+            title: 'Update customer status?',
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonText: 'Yes',
+            cancelButtonText: 'Cancel'
+        }).then(result => {
+            if (result.isConfirmed) {
+                fetch(form.action, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                        'Accept': 'application/json'
+                    },
+                    body: new FormData(form)
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        Swal.fire('Success', data.message, 'success')
+                            .then(() => location.reload());
+                    } else {
+                        Swal.fire('Error', 'Could not update customer status.', 'error');
+                    }
+                })
+                .catch(() => {
+                    Swal.fire('Error', 'Something went wrong.', 'error');
+                });
+            }
         });
     });
+});
 </script>
-
-</body>
-</html>
+@endpush
