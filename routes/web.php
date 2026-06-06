@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\FrontendController;
+use App\Http\Controllers\NotificationController;
 
 use App\Http\Controllers\Admin\RoomController;
 use App\Http\Controllers\Admin\CustomerController;
@@ -34,6 +35,17 @@ Route::get('/ajax/rooms', [FrontendController::class, 'ajaxRooms'])
 Route::get('/dashboard', [DashboardController::class, 'redirect'])
     ->middleware(['auth', 'verified'])
     ->name('dashboard');
+
+// Notification Routes
+Route::middleware(['auth'])->group(function () {
+
+    Route::patch('/notifications/{notification}/read', [NotificationController::class, 'markAsRead'])
+        ->name('notifications.read');
+
+    Route::patch('/notifications/read-all', [NotificationController::class, 'markAllAsRead'])
+        ->name('notifications.readAll');
+
+});
 
 // Admin Routes
 Route::middleware(['auth', 'admin'])

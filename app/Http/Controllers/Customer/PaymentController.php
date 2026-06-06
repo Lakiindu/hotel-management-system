@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Customer;
 
 use App\Http\Controllers\Controller;
 use App\Models\Payment;
+use App\Models\Notification;
+use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -76,6 +78,19 @@ class PaymentController extends Controller
             'payment_date' => Carbon::now(),
         ]);
 
+        $payment->load('booking.user');
+
+        $admins = User::where('role', 'admin')->get();
+
+        foreach ($admins as $admin) {
+            Notification::create([
+                'user_id' => $admin->id,
+                'title' => 'Payment Received',
+                'message' => 'Rs. ' . number_format($payment->amount, 2) . ' payment received from ' . $payment->booking->user->name . '.',
+                'is_read' => false,
+            ]);
+        }
+
         return redirect()->route('customer.payments.invoice', $payment->id)
             ->with('success', 'Demo card payment completed successfully.');
     }
@@ -92,48 +107,50 @@ class PaymentController extends Controller
     }
 
     public function downloadInvoicePdf(Payment $payment)
-{
-if ($payment->booking->user_id !== Auth::id()) {        abort(403);
+    {
+        if ($payment->booking->user_id !== Auth::id()) {
+            abort(403);
+        }
+
+        $payment->load('booking.room', 'booking.user');
+
+        $pdf = Pdf::loadView('customer.payments.invoice-pdf', compact('payment'));
+
+        return $pdf->download('invoice-' . $payment->id . '.pdf');
     }
 
-    $payment->load('booking.room', 'booking.user');
+    public function downloadInvoiceCsv(Payment $payment)
+    {
+        if ($payment->booking->user_id !== Auth::id()) {
+            abort(403);
+        }
 
-    $pdf = Pdf::loadView('customer.payments.invoice-pdf', compact('payment'));
+        $payment->load('booking.room', 'booking.user');
 
-    return $pdf->download('invoice-' . $payment->id . '.pdf');
-}
+        $fileName = 'invoice-' . $payment->id . '.csv';
 
-public function downloadInvoiceCsv(Payment $payment)
-{
-if ($payment->booking->user_id !== Auth::id()) {        abort(403);
+        $headers = [
+            'Content-Type' => 'text/csv',
+            'Content-Disposition' => "attachment; filename=$fileName",
+        ];
+
+        $callback = function () use ($payment) {
+            $file = fopen('php://output', 'w');
+
+            fputcsv($file, ['Invoice ID', 'INV-' . str_pad($payment->id, 5, '0', STR_PAD_LEFT)]);
+            fputcsv($file, ['Customer', $payment->booking->user->name]);
+            fputcsv($file, ['Email', $payment->booking->user->email]);
+            fputcsv($file, ['Booking ID', $payment->booking->id]);
+            fputcsv($file, ['Room', $payment->booking->room->room_type]);
+            fputcsv($file, ['Check In', $payment->booking->check_in_date->format('Y-m-d')]);
+            fputcsv($file, ['Check Out', $payment->booking->check_out_date->format('Y-m-d')]);
+            fputcsv($file, ['Payment Method', $payment->payment_method]);
+            fputcsv($file, ['Status', $payment->status]);
+            fputcsv($file, ['Amount', $payment->amount]);
+
+            fclose($file);
+        };
+
+        return response()->stream($callback, 200, $headers);
     }
-
-    $payment->load('booking.room', 'booking.user');
-
-    $fileName = 'invoice-' . $payment->id . '.csv';
-
-    $headers = [
-        'Content-Type' => 'text/csv',
-        'Content-Disposition' => "attachment; filename=$fileName",
-    ];
-
-    $callback = function () use ($payment) {
-        $file = fopen('php://output', 'w');
-
-        fputcsv($file, ['Invoice ID', 'INV-' . str_pad($payment->id, 5, '0', STR_PAD_LEFT)]);
-        fputcsv($file, ['Customer', $payment->booking->user->name]);
-        fputcsv($file, ['Email', $payment->booking->user->email]);
-        fputcsv($file, ['Booking ID', $payment->booking->id]);
-        fputcsv($file, ['Room', $payment->booking->room->room_type]);
-        fputcsv($file, ['Check In', $payment->booking->check_in_date->format('Y-m-d')]);
-        fputcsv($file, ['Check Out', $payment->booking->check_out_date->format('Y-m-d')]);
-        fputcsv($file, ['Payment Method', $payment->payment_method]);
-        fputcsv($file, ['Status', $payment->status]);
-        fputcsv($file, ['Amount', $payment->amount]);
-
-        fclose($file);
-    };
-
-    return response()->stream($callback, 200, $headers);
-}
 }

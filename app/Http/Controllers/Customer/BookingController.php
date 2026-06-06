@@ -7,6 +7,8 @@ use App\Models\Booking;
 use App\Models\Room;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use App\Models\Notification;
+use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 
 class BookingController extends Controller
@@ -64,7 +66,7 @@ class BookingController extends Controller
 
         $totalAmount = $days * $room->price_per_night;
 
-        Booking::create([
+        $booking = Booking::create([
             'user_id' => Auth::id(),
             'room_id' => $room->id,
             'check_in_date' => $request->check_in_date,
@@ -74,6 +76,17 @@ class BookingController extends Controller
             'status' => 'pending',
             'total_amount' => $totalAmount,
         ]);
+
+        $admins = User::where('role', 'admin')->get();
+
+        foreach ($admins as $admin) {
+            Notification::create([
+                'user_id' => $admin->id,
+                'title' => 'New Booking',
+                'message' => 'A new booking has been received.',
+                'is_read' => false,
+            ]);
+        }
 
         return redirect()->route('customer.bookings.index')
             ->with('success', 'Booking submitted successfully. Waiting for admin approval.');
@@ -113,6 +126,17 @@ class BookingController extends Controller
         $booking->update([
             'status' => 'cancelled',
         ]);
+
+        $admins = User::where('role', 'admin')->get();
+
+        foreach ($admins as $admin) {
+            Notification::create([
+                'user_id' => $admin->id,
+                'title' => 'Booking Cancelled',
+                'message' => Auth::user()->name . ' cancelled booking #' . $booking->id . '.',
+                'is_read' => false,
+            ]);
+        }
 
         return redirect()->route('customer.bookings.index')
             ->with('success', 'Booking cancelled successfully.');

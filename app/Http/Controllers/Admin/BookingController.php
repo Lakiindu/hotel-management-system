@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Booking;
 use App\Models\Payment;
+use App\Models\Notification;
 use Illuminate\Http\Request;
 
 class BookingController extends Controller
@@ -74,11 +75,43 @@ class BookingController extends Controller
                     'status' => 'pending',
                 ]
             );
+
+            Notification::create([
+                'user_id' => $booking->user_id,
+                'title' => 'Booking Approved',
+                'message' => 'Your booking has been approved.',
+                'is_read' => false,
+            ]);
+        }
+
+        if ($request->status === 'cancelled') {
+            Notification::create([
+                'user_id' => $booking->user_id,
+                'title' => 'Booking Cancelled',
+                'message' => 'Your booking has been cancelled.',
+                'is_read' => false,
+            ]);
         }
 
         if ($request->status === 'checked_in') {
             $booking->room->update([
                 'status' => 'occupied',
+            ]);
+
+            Notification::create([
+                'user_id' => $booking->user_id,
+                'title' => 'Check-In Successful',
+                'message' => 'You have successfully checked in.',
+                'is_read' => false,
+            ]);
+        }
+
+        if ($request->status === 'checked_out') {
+            Notification::create([
+                'user_id' => $booking->user_id,
+                'title' => 'Check-Out Successful',
+                'message' => 'You have successfully checked out.',
+                'is_read' => false,
             ]);
         }
 

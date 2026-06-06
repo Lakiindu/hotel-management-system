@@ -104,12 +104,72 @@
             </div>
 
             <div class="hidden md:flex items-center gap-4">
-                <button class="relative bg-white p-4 rounded-2xl shadow hover:bg-slate-50">
-                    <i data-lucide="bell"></i>
-                    <span class="absolute -top-1 -right-1 bg-red-500 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center">
-                        0
-                    </span>
-                </button>
+
+                <div class="relative">
+                    <button id="notificationBtn"
+                            type="button"
+                            class="relative bg-white p-4 rounded-2xl shadow hover:bg-slate-50">
+                        <i data-lucide="bell"></i>
+
+                        <span class="absolute -top-1 -right-1 bg-red-500 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center">
+                            {{ auth()->user()->unreadNotifications()->count() }}
+                        </span>
+                    </button>
+
+                    <div id="notificationDropdown"
+                         class="hidden absolute right-0 mt-3 w-96 bg-white rounded-3xl shadow-xl z-50 overflow-hidden">
+
+                        <div class="p-5 border-b flex justify-between items-center">
+                            <h3 class="font-bold text-slate-800">
+                                Notifications
+                            </h3>
+
+                            <form method="POST" action="{{ route('notifications.readAll') }}">
+                                @csrf
+                                @method('PATCH')
+
+                                <button class="text-sm text-blue-600 font-semibold">
+                                    Mark all read
+                                </button>
+                            </form>
+                        </div>
+
+                        <div class="max-h-96 overflow-y-auto">
+                            @forelse(auth()->user()->notifications()->latest()->take(8)->get() as $notification)
+                                <div class="p-5 border-b {{ $notification->is_read ? 'bg-white' : 'bg-amber-50' }}">
+                                    <h4 class="font-bold text-slate-800">
+                                        {{ $notification->title }}
+                                    </h4>
+
+                                    <p class="text-sm text-slate-500 mt-1">
+                                        {{ $notification->message }}
+                                    </p>
+
+                                    <p class="text-xs text-slate-400 mt-2">
+                                        {{ $notification->created_at->diffForHumans() }}
+                                    </p>
+
+                                    @if(!$notification->is_read)
+                                        <form method="POST"
+                                              action="{{ route('notifications.read', $notification->id) }}"
+                                              class="mt-3">
+                                            @csrf
+                                            @method('PATCH')
+
+                                            <button class="text-xs bg-slate-950 text-white px-3 py-1 rounded-full">
+                                                Mark as read
+                                            </button>
+                                        </form>
+                                    @endif
+                                </div>
+                            @empty
+                                <div class="p-6 text-center text-slate-500">
+                                    No notifications yet.
+                                </div>
+                            @endforelse
+                        </div>
+                    </div>
+                </div>
 
                 <div class="flex items-center gap-4 bg-white p-4 rounded-3xl shadow">
                     <div class="w-12 h-12 rounded-full bg-amber-400 text-slate-950 flex items-center justify-center font-extrabold">
@@ -151,6 +211,24 @@
     overlay?.addEventListener('click', () => {
         sidebar.classList.add('-translate-x-full');
         overlay.classList.add('hidden');
+    });
+
+    const notificationBtn = document.getElementById('notificationBtn');
+    const notificationDropdown = document.getElementById('notificationDropdown');
+
+    notificationBtn?.addEventListener('click', (event) => {
+        event.stopPropagation();
+        notificationDropdown.classList.toggle('hidden');
+    });
+
+    document.addEventListener('click', (event) => {
+        if (
+            notificationDropdown &&
+            !notificationDropdown.contains(event.target) &&
+            !notificationBtn.contains(event.target)
+        ) {
+            notificationDropdown.classList.add('hidden');
+        }
     });
 </script>
 

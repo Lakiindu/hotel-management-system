@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Payment;
+use App\Models\Notification;
 use Illuminate\Http\Request;
 
 class PaymentController extends Controller
@@ -60,6 +61,17 @@ class PaymentController extends Controller
         $payment->update([
             'status' => 'paid',
             'payment_date' => now(),
+        ]);
+
+        // Load booking and user relationship
+        $payment->load('booking.user');
+
+        // Customer notification
+        Notification::create([
+            'user_id' => $payment->booking->user_id,
+            'title' => 'Payment Confirmed',
+            'message' => 'Your payment has been confirmed.',
+            'is_read' => false,
         ]);
 
         return back()->with('success', 'Payment confirmed successfully.');

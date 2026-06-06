@@ -11,6 +11,7 @@ use Illuminate\Notifications\Notifiable;
 // Relationships
 use App\Models\Booking;
 use App\Models\Review;
+use App\Models\Notification;
 
 class User extends Authenticatable
 {
@@ -71,6 +72,23 @@ class User extends Authenticatable
     public function reviews()
     {
         return $this->hasMany(Review::class);
+    }
+
+    /**
+     * User has many notifications.
+     */
+    public function notifications()
+    {
+        return $this->hasMany(Notification::class);
+    }
+
+    /**
+     * User unread notifications.
+     */
+    public function unreadNotifications()
+    {
+        return $this->hasMany(Notification::class)
+            ->where('is_read', false);
     }
 
     /**
