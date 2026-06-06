@@ -12,16 +12,16 @@
     @stack('styles')
 </head>
 
-<body class="bg-slate-100 text-slate-900">
+<body class="bg-slate-100 text-slate-900 overflow-hidden">
 
-<div class="flex min-h-screen">
+<div class="min-h-screen">
 
-    <!-- Sidebar -->
+    <!-- Fixed Sidebar -->
     <aside id="sidebar"
-           class="fixed lg:static inset-y-0 left-0 z-50 w-72 bg-slate-950 text-white p-6 transform -translate-x-full lg:translate-x-0 transition-transform duration-300 flex flex-col justify-between">
+           class="fixed inset-y-0 left-0 z-50 w-72 bg-slate-950 text-white px-6 py-8 transform -translate-x-full lg:translate-x-0 transition-transform duration-300 flex flex-col justify-between">
 
         <div>
-            <div class="flex justify-between items-center mb-10">
+            <div class="flex justify-between items-center mb-14">
                 <h1 class="text-3xl font-extrabold">
                     RoyalStay<span class="text-amber-400">.</span>
                 </h1>
@@ -31,7 +31,7 @@
                 </button>
             </div>
 
-            <nav class="space-y-3">
+            <nav class="space-y-4">
                 <a href="{{ route('customer.dashboard') }}"
                    class="flex items-center gap-3 px-5 py-3 rounded-2xl
                    {{ request()->routeIs('customer.dashboard') ? 'bg-amber-400 text-slate-950 font-bold' : 'hover:bg-slate-800' }}">
@@ -78,14 +78,12 @@
         </form>
     </aside>
 
-    <!-- Overlay for mobile -->
+    <!-- Mobile Overlay -->
     <div id="sidebarOverlay" class="fixed inset-0 bg-black/40 z-40 hidden lg:hidden"></div>
 
-    <!-- Main -->
-    <main class="flex-1 p-6 lg:p-10">
-
-        <!-- Topbar -->
-        <div class="flex justify-between items-center mb-8">
+    <!-- Fixed Header -->
+    <header class="fixed top-0 left-0 lg:left-72 right-0 z-30 bg-slate-100/95 backdrop-blur px-6 lg:px-10 py-6 border-b border-slate-200">
+        <div class="flex justify-between items-center">
 
             <div class="flex items-center gap-4">
                 <button id="openSidebar" type="button"
@@ -189,9 +187,11 @@
                 </div>
             </div>
         </div>
+    </header>
 
+    <!-- Scrollable Content Only -->
+    <main class="lg:ml-72 h-screen overflow-y-auto px-6 lg:px-10 pt-44 pb-10">
         @yield('content')
-
     </main>
 
 </div>
@@ -204,35 +204,39 @@
     const openSidebar = document.getElementById('openSidebar');
     const closeSidebar = document.getElementById('closeSidebar');
 
-    if (openSidebar) {
-        openSidebar.addEventListener('click', () => {
-            sidebar.classList.remove('-translate-x-full');
-            overlay.classList.remove('hidden');
-        });
-    }
+    openSidebar?.addEventListener('click', () => {
+        sidebar.classList.remove('-translate-x-full');
+        overlay.classList.remove('hidden');
+    });
 
-    if (closeSidebar) {
-        closeSidebar.addEventListener('click', () => {
-            sidebar.classList.add('-translate-x-full');
-            overlay.classList.add('hidden');
-        });
-    }
+    closeSidebar?.addEventListener('click', () => {
+        sidebar.classList.add('-translate-x-full');
+        overlay.classList.add('hidden');
+    });
 
-    if (overlay) {
-        overlay.addEventListener('click', () => {
-            sidebar.classList.add('-translate-x-full');
-            overlay.classList.add('hidden');
-        });
-    }
+    overlay?.addEventListener('click', () => {
+        sidebar.classList.add('-translate-x-full');
+        overlay.classList.add('hidden');
+    });
 
     const customerNotificationBtn = document.getElementById('customerNotificationBtn');
     const customerNotificationDropdown = document.getElementById('customerNotificationDropdown');
 
-    if (customerNotificationBtn) {
-        customerNotificationBtn.addEventListener('click', () => {
-            customerNotificationDropdown.classList.toggle('hidden');
-        });
-    }
+    customerNotificationBtn?.addEventListener('click', (event) => {
+        event.stopPropagation();
+        customerNotificationDropdown.classList.toggle('hidden');
+    });
+
+    document.addEventListener('click', (event) => {
+        if (
+            customerNotificationDropdown &&
+            customerNotificationBtn &&
+            !customerNotificationDropdown.contains(event.target) &&
+            !customerNotificationBtn.contains(event.target)
+        ) {
+            customerNotificationDropdown.classList.add('hidden');
+        }
+    });
 </script>
 
 @stack('scripts')

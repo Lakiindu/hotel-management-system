@@ -21,7 +21,7 @@
         </div>
 
         <div class="bg-white/10 p-6 rounded-3xl">
-            <p class="text-slate-300">Available room types</p>
+            <p class="text-slate-300">Available Room Types</p>
             <h3 class="text-4xl font-extrabold text-amber-400">
                 {{ $roomTypes->count() }}
             </h3>
@@ -37,9 +37,7 @@
            placeholder="Search room..."
            class="border rounded-2xl px-4 py-3">
 
-    <select id="typeFilter"
-            name="type"
-            class="border rounded-2xl px-4 py-3">
+    <select id="typeFilter" name="type" class="border rounded-2xl px-4 py-3">
         <option value="">All Types</option>
         @foreach($roomTypes as $type)
             <option value="{{ $type }}" {{ request('type') == $type ? 'selected' : '' }}>
@@ -48,9 +46,7 @@
         @endforeach
     </select>
 
-    <select id="statusFilter"
-            name="status"
-            class="border rounded-2xl px-4 py-3">
+    <select id="statusFilter" name="status" class="border rounded-2xl px-4 py-3">
         <option value="">All Status</option>
         <option value="available" {{ request('status') == 'available' ? 'selected' : '' }}>Available</option>
         <option value="occupied" {{ request('status') == 'occupied' ? 'selected' : '' }}>Occupied</option>
@@ -66,7 +62,7 @@
 
 <div id="roomsGrid" class="grid md:grid-cols-2 xl:grid-cols-3 gap-8">
     @forelse($rooms as $room)
-        <div class="bg-white rounded-[2rem] shadow overflow-hidden hover:-translate-y-1 transition">
+        <div class="bg-white rounded-[2rem] shadow overflow-hidden hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
             <div class="relative">
                 <img src="{{ $room->image ? asset('storage/' . $room->image) : 'https://images.unsplash.com/photo-1590490360182-c33d57733427?auto=format&fit=crop&w=900&q=80' }}"
                      class="h-64 w-full object-cover">
@@ -80,24 +76,47 @@
             </div>
 
             <div class="p-6">
-                <h3 class="text-2xl font-extrabold mb-2">
-                    {{ $room->room_type }}
-                </h3>
+                <div class="flex justify-between items-start mb-3">
+                    <div>
+                        <h3 class="text-2xl font-extrabold">
+                            {{ $room->room_type }}
+                        </h3>
 
-                <p class="text-slate-500 mb-4">
-                    Room No: {{ $room->room_number }}
-                </p>
+                        <p class="text-slate-500">
+                            Room No: {{ $room->room_number }}
+                        </p>
+                    </div>
+
+                    <div class="text-right">
+                        <p class="text-amber-500 font-bold">★★★★★</p>
+                        <p class="text-xs text-slate-500">4.8 Rating</p>
+                    </div>
+                </div>
 
                 <p class="text-slate-600 mb-4">
                     {{ Str::limit($room->description, 90) }}
                 </p>
+
+                <div class="flex flex-wrap gap-2 mb-5">
+                    <span class="bg-slate-100 text-slate-700 px-3 py-1 rounded-full text-sm">
+                        {{ $room->capacity }} Guests
+                    </span>
+
+                    <span class="bg-slate-100 text-slate-700 px-3 py-1 rounded-full text-sm">
+                        Free WiFi
+                    </span>
+
+                    <span class="bg-slate-100 text-slate-700 px-3 py-1 rounded-full text-sm">
+                        Breakfast
+                    </span>
+                </div>
 
                 <p class="text-amber-500 font-extrabold text-xl mb-5">
                     Rs. {{ number_format($room->price_per_night, 2) }} / night
                 </p>
 
                 <a href="{{ route('rooms.details', $room->id) }}"
-                   class="bg-slate-950 text-white px-5 py-3 rounded-xl font-bold inline-block">
+                   class="bg-slate-950 text-white px-5 py-3 rounded-xl font-bold inline-block hover:bg-slate-800 transition">
                     View Details
                 </a>
             </div>
@@ -168,7 +187,7 @@ function loadRooms() {
             if (room.status === 'maintenance') statusClass = 'bg-yellow-100 text-yellow-700';
 
             roomsGrid.innerHTML += `
-                <div class="bg-white rounded-[2rem] shadow overflow-hidden hover:-translate-y-1 transition">
+                <div class="bg-white rounded-[2rem] shadow overflow-hidden hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
                     <div class="relative">
                         <img src="${image}" class="h-64 w-full object-cover">
 
@@ -178,22 +197,42 @@ function loadRooms() {
                     </div>
 
                     <div class="p-6">
-                        <h3 class="text-2xl font-extrabold mb-2">${room.room_type}</h3>
+                        <div class="flex justify-between items-start mb-3">
+                            <div>
+                                <h3 class="text-2xl font-extrabold">${room.room_type}</h3>
+                                <p class="text-slate-500">Room No: ${room.room_number}</p>
+                            </div>
 
-                        <p class="text-slate-500 mb-4">
-                            Room No: ${room.room_number}
-                        </p>
+                            <div class="text-right">
+                                <p class="text-amber-500 font-bold">★★★★★</p>
+                                <p class="text-xs text-slate-500">4.8 Rating</p>
+                            </div>
+                        </div>
 
                         <p class="text-slate-600 mb-4">
                             ${room.description ? room.description.substring(0, 90) : ''}
                         </p>
+
+                        <div class="flex flex-wrap gap-2 mb-5">
+                            <span class="bg-slate-100 text-slate-700 px-3 py-1 rounded-full text-sm">
+                                ${room.capacity} Guests
+                            </span>
+
+                            <span class="bg-slate-100 text-slate-700 px-3 py-1 rounded-full text-sm">
+                                Free WiFi
+                            </span>
+
+                            <span class="bg-slate-100 text-slate-700 px-3 py-1 rounded-full text-sm">
+                                Breakfast
+                            </span>
+                        </div>
 
                         <p class="text-amber-500 font-extrabold text-xl mb-5">
                             Rs. ${Number(room.price_per_night).toLocaleString()} / night
                         </p>
 
                         <a href="/rooms/${room.id}"
-                           class="bg-slate-950 text-white px-5 py-3 rounded-xl font-bold inline-block">
+                           class="bg-slate-950 text-white px-5 py-3 rounded-xl font-bold inline-block hover:bg-slate-800 transition">
                             View Details
                         </a>
                     </div>

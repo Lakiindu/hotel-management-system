@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Notification;
+use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
 
@@ -23,6 +24,7 @@ class NotificationController extends Controller
 
     public function markAllAsRead(): RedirectResponse
     {
+        /** @var User $user */
         $user = Auth::user();
 
         if (!$user) {

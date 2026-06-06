@@ -93,14 +93,31 @@ class BookingController extends Controller
     }
 
     public function index()
-    {
-        $bookings = Booking::with(['room', 'review'])
-            ->where('user_id', Auth::id())
-            ->latest()
-            ->paginate(8);
+{
+    $userId = Auth::id();
 
-        return view('customer.bookings.index', compact('bookings'));
-    }
+    $bookings = Booking::with(['room', 'review'])
+        ->where('user_id', $userId)
+        ->latest()
+        ->paginate(8);
+
+    $totalBookings = Booking::where('user_id', $userId)->count();
+
+    $activeBookings = Booking::where('user_id', $userId)
+        ->whereIn('status', ['pending', 'approved', 'checked_in'])
+        ->count();
+
+    $completedBookings = Booking::where('user_id', $userId)
+        ->where('status', 'completed')
+        ->count();
+
+    return view('customer.bookings.index', compact(
+        'bookings',
+        'totalBookings',
+        'activeBookings',
+        'completedBookings'
+    ));
+}
 
     public function show(Booking $booking)
     {

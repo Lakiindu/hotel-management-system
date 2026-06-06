@@ -10,7 +10,7 @@
 
 <div class="flex justify-end mb-6">
     <a href="{{ route('rooms') }}"
-       class="bg-amber-400 text-slate-950 px-6 py-3 rounded-2xl font-bold shadow hover:bg-amber-300">
+       class="bg-amber-400 text-slate-950 px-6 py-3 rounded-2xl font-bold shadow hover:bg-amber-300 transition">
         + Browse Rooms
     </a>
 </div>
@@ -28,36 +28,54 @@
 @endif
 
 <div class="grid md:grid-cols-3 gap-6 mb-8">
-    <div class="bg-white p-6 rounded-3xl shadow">
-        <p class="text-slate-500">Total Bookings</p>
-        <h2 class="text-4xl font-extrabold text-blue-600">{{ $bookings->total() }}</h2>
+    <div class="bg-white p-6 rounded-3xl shadow hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
+        <div class="flex justify-between items-center mb-4">
+            <p class="text-slate-500">Total Bookings</p>
+            <i data-lucide="calendar-days" class="text-blue-600"></i>
+        </div>
+        <h2 class="text-4xl font-extrabold text-blue-600">{{ $totalBookings }}</h2>
     </div>
 
-    <div class="bg-white p-6 rounded-3xl shadow">
-        <p class="text-slate-500">Current Page</p>
-        <h2 class="text-4xl font-extrabold text-amber-500">{{ $bookings->count() }}</h2>
+    <div class="bg-white p-6 rounded-3xl shadow hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
+        <div class="flex justify-between items-center mb-4">
+            <p class="text-slate-500">Active Bookings</p>
+            <i data-lucide="clock" class="text-amber-500"></i>
+        </div>
+        <h2 class="text-4xl font-extrabold text-amber-500">{{ $activeBookings }}</h2>
     </div>
 
-    <div class="bg-white p-6 rounded-3xl shadow">
-        <p class="text-slate-500">Page</p>
-        <h2 class="text-4xl font-extrabold text-purple-600">{{ $bookings->currentPage() }}</h2>
+    <div class="bg-white p-6 rounded-3xl shadow hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
+        <div class="flex justify-between items-center mb-4">
+            <p class="text-slate-500">Completed Stays</p>
+            <i data-lucide="badge-check" class="text-green-600"></i>
+        </div>
+        <h2 class="text-4xl font-extrabold text-green-600">{{ $completedBookings }}</h2>
     </div>
 </div>
 
 <div class="grid lg:grid-cols-2 gap-6">
     @forelse($bookings as $booking)
-        <div class="bg-white rounded-3xl shadow overflow-hidden hover:-translate-y-1 transition">
+        <div class="bg-white rounded-3xl shadow overflow-hidden hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
             <div class="grid md:grid-cols-3">
 
                 <img src="{{ $booking->room->image ? asset('storage/' . $booking->room->image) : 'https://images.unsplash.com/photo-1590490360182-c33d57733427?auto=format&fit=crop&w=900&q=80' }}"
-                     class="h-full min-h-[220px] w-full object-cover">
+                     class="h-full min-h-[240px] w-full object-cover">
 
                 <div class="md:col-span-2 p-6">
 
                     <div class="flex justify-between items-start gap-4 mb-4">
                         <div>
-                            <h2 class="text-2xl font-extrabold">{{ $booking->room->room_type }}</h2>
-                            <p class="text-slate-500">Room No: {{ $booking->room->room_number }}</p>
+                            <p class="text-sm text-amber-500 font-bold mb-1">
+                                Booking #{{ $booking->id }}
+                            </p>
+
+                            <h2 class="text-2xl font-extrabold">
+                                {{ $booking->room->room_type }}
+                            </h2>
+
+                            <p class="text-slate-500">
+                                Room No: {{ $booking->room->room_number }}
+                            </p>
                         </div>
 
                         <span class="px-3 py-1 rounded-full text-sm font-semibold
@@ -95,13 +113,13 @@
 
                     <div class="flex flex-wrap gap-3">
                         <a href="{{ route('customer.bookings.show', $booking->id) }}"
-                           class="bg-slate-950 text-white px-5 py-3 rounded-xl font-bold">
+                           class="bg-slate-950 text-white px-5 py-3 rounded-xl font-bold hover:bg-slate-800 transition">
                             View Details
                         </a>
 
                         @if($booking->status === 'completed' && !$booking->review)
                             <a href="{{ route('customer.reviews.create', $booking->id) }}"
-                               class="bg-green-600 text-white px-5 py-3 rounded-xl font-bold">
+                               class="bg-green-600 text-white px-5 py-3 rounded-xl font-bold hover:bg-green-700 transition">
                                 Review
                             </a>
                         @endif
@@ -114,7 +132,7 @@
                                 @method('PATCH')
 
                                 <button type="button"
-                                        class="cancel-btn bg-red-500 text-white px-5 py-3 rounded-xl font-bold">
+                                        class="cancel-btn bg-red-500 text-white px-5 py-3 rounded-xl font-bold hover:bg-red-600 transition">
                                     Cancel
                                 </button>
                             </form>

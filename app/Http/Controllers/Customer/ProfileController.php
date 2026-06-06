@@ -13,13 +13,56 @@ class ProfileController extends Controller
 {
     public function edit()
     {
-        return view('customer.profile.edit');
+        /** @var User $user */
+        $user = Auth::user();
+
+        if (!$user) {
+            abort(403);
+        }
+
+        $completedFields = 0;
+        $totalFields = 5;
+
+        if ($user->name) {
+            $completedFields++;
+        }
+
+        if ($user->email) {
+            $completedFields++;
+        }
+
+        if ($user->phone) {
+            $completedFields++;
+        }
+
+        if ($user->address) {
+            $completedFields++;
+        }
+
+        if ($user->profile_image) {
+            $completedFields++;
+        }
+
+        $profileCompletion = round(($completedFields / $totalFields) * 100);
+
+        $totalStays = $user->bookings()
+            ->where('status', 'completed')
+            ->count();
+
+        return view('customer.profile.edit', compact(
+            'profileCompletion',
+            'totalStays'
+        ));
     }
 
     public function update(Request $request)
     {
         /** @var User $user */
         $user = Auth::user();
+
+        if (!$user) {
+            abort(403);
+        }
 
         $request->validate([
             'name' => 'required|string|max:255',
@@ -35,7 +78,8 @@ class ProfileController extends Controller
                 Storage::disk('public')->delete($user->profile_image);
             }
 
-            $imagePath = $request->file('profile_image')->store('profiles', 'public');
+            $imagePath = $request->file('profile_image')
+                ->store('profiles', 'public');
         }
 
         $user->update([
@@ -52,6 +96,10 @@ class ProfileController extends Controller
     {
         /** @var User $user */
         $user = Auth::user();
+
+        if (!$user) {
+            abort(403);
+        }
 
         $request->validate([
             'current_password' => 'required',

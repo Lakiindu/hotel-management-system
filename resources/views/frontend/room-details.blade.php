@@ -1,93 +1,114 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>{{ $room->room_type }}</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-</head>
-<body class="bg-slate-100">
+@extends('layouts.customer')
 
-<header class="bg-slate-950 text-white px-8 py-5 flex justify-between">
-    <a href="{{ route('home') }}" class="text-2xl font-bold">RoyalStay.</a>
+@section('title', $room->room_type)
 
-    <nav class="space-x-5">
-        <a href="{{ route('home') }}">Home</a>
-        <a href="{{ route('rooms') }}" class="text-amber-400">Rooms</a>
-        <a href="{{ route('login') }}">Login</a>
-        <a href="{{ route('register') }}" class="bg-amber-400 text-slate-950 px-4 py-2 rounded-full">Register</a>
-    </nav>
-</header>
+@section('page-title', $room->room_type)
 
-<section class="py-16">
-    <div class="max-w-6xl mx-auto px-6 grid md:grid-cols-2 gap-10">
+@section('page-subtitle', 'View room details, facilities and booking options.')
 
-        <div>
-            <img src="{{ $room->image ? asset('storage/' . $room->image) : 'https://images.unsplash.com/photo-1590490360182-c33d57733427?auto=format&fit=crop&w=900&q=80' }}"
-                 class="w-full h-[450px] object-cover rounded-3xl shadow">
+@section('content')
+
+<div class="grid lg:grid-cols-2 gap-8">
+
+    <div class="bg-white rounded-[2rem] shadow overflow-hidden">
+        <img src="{{ $room->image ? asset('storage/' . $room->image) : 'https://images.unsplash.com/photo-1590490360182-c33d57733427?auto=format&fit=crop&w=900&q=80' }}"
+             class="w-full h-[460px] object-cover">
+
+        <div class="p-6">
+            <p class="text-slate-500">Room Number</p>
+            <h2 class="text-2xl font-extrabold">{{ $room->room_number }}</h2>
         </div>
+    </div>
 
-        <div class="bg-white p-8 rounded-3xl shadow">
-            <h1 class="text-4xl font-extrabold mb-3">{{ $room->room_type }}</h1>
+    <div class="bg-white p-8 rounded-[2rem] shadow">
 
-            <p class="text-slate-500 mb-3">
-                Room Number: {{ $room->room_number }}
-            </p>
+        <div class="flex justify-between items-start gap-4 mb-6">
+            <div>
+                <h1 class="text-4xl font-extrabold mb-2">
+                    {{ $room->room_type }}
+                </h1>
 
-            <p class="text-slate-600 leading-8 mb-6">
-                {{ $room->description }}
-            </p>
-
-            <p class="text-amber-500 text-3xl font-extrabold mb-6">
-                Rs. {{ number_format($room->price_per_night, 2) }}
-                <span class="text-base text-slate-500 font-normal">/ night</span>
-            </p>
-
-            <p class="mb-4">
-                <strong>Capacity:</strong> {{ $room->capacity }} Guests
-            </p>
-
-            <p class="mb-6">
-                <strong>Status:</strong>
-                <span class="px-3 py-1 rounded-full text-sm
-                    {{ $room->status == 'available' ? 'bg-green-100 text-green-700' : '' }}
-                    {{ $room->status == 'occupied' ? 'bg-red-100 text-red-700' : '' }}
-                    {{ $room->status == 'maintenance' ? 'bg-yellow-100 text-yellow-700' : '' }}">
-                    {{ ucfirst($room->status) }}
-                </span>
-            </p>
-
-            <div class="mb-8">
-                <h3 class="font-bold mb-3">Facilities</h3>
-
-                <div class="flex flex-wrap gap-2">
-                    @if(is_array($room->facilities))
-                        @foreach($room->facilities as $facility)
-                            <span class="bg-slate-100 px-4 py-2 rounded-full text-sm">
-                                {{ $facility }}
-                            </span>
-                        @endforeach
-                    @endif
-                </div>
+                <p class="text-slate-500">
+                    Perfect stay for up to {{ $room->capacity }} guests.
+                </p>
             </div>
 
+            <span class="px-4 py-2 rounded-full text-sm font-semibold
+                {{ $room->status == 'available' ? 'bg-green-100 text-green-700' : '' }}
+                {{ $room->status == 'occupied' ? 'bg-red-100 text-red-700' : '' }}
+                {{ $room->status == 'maintenance' ? 'bg-yellow-100 text-yellow-700' : '' }}">
+                {{ ucfirst($room->status) }}
+            </span>
+        </div>
+
+        <p class="text-slate-600 leading-8 mb-6">
+            {{ $room->description }}
+        </p>
+
+        <div class="grid md:grid-cols-2 gap-4 mb-6">
+            <div class="bg-slate-50 p-5 rounded-2xl">
+                <p class="text-slate-500">Price Per Night</p>
+                <h3 class="text-2xl font-extrabold text-amber-500">
+                    Rs. {{ number_format($room->price_per_night, 2) }}
+                </h3>
+            </div>
+
+            <div class="bg-slate-50 p-5 rounded-2xl">
+                <p class="text-slate-500">Capacity</p>
+                <h3 class="text-2xl font-extrabold">
+                    {{ $room->capacity }} Guests
+                </h3>
+            </div>
+        </div>
+
+        <div class="mb-8">
+            <h3 class="text-xl font-extrabold mb-4">Facilities</h3>
+
+            <div class="flex flex-wrap gap-2">
+                @if(is_array($room->facilities) && count($room->facilities) > 0)
+                    @foreach($room->facilities as $facility)
+                        <span class="bg-slate-100 px-4 py-2 rounded-full text-sm font-semibold">
+                            {{ $facility }}
+                        </span>
+                    @endforeach
+                @else
+                    <p class="text-slate-500">No facilities added.</p>
+                @endif
+            </div>
+        </div>
+
+        <div class="flex flex-wrap gap-3">
             @auth
                 @if(auth()->user()->role === 'customer')
-                    <a href="{{ route('customer.bookings.create', $room->id) }}"
-                     class="bg-amber-400 text-slate-950 px-7 py-3 rounded-full font-bold">
-                     Book This Room
-                    </a>
+                    @if($room->status === 'available')
+                        <a href="{{ route('customer.bookings.create', $room->id) }}"
+                           class="bg-amber-400 text-slate-950 px-7 py-3 rounded-2xl font-bold">
+                            Book This Room
+                        </a>
+                    @else
+                        <button disabled
+                                class="bg-slate-300 text-slate-500 px-7 py-3 rounded-2xl font-bold cursor-not-allowed">
+                            Not Available
+                        </button>
+                    @endif
                 @else
                     <p class="text-slate-500">Admin cannot book rooms.</p>
                 @endif
             @else
                 <a href="{{ route('login') }}"
-                   class="bg-amber-400 text-slate-950 px-7 py-3 rounded-full font-bold">
+                   class="bg-amber-400 text-slate-950 px-7 py-3 rounded-2xl font-bold">
                     Login to Book
                 </a>
             @endauth
+
+            <a href="{{ route('rooms') }}"
+               class="bg-slate-950 text-white px-7 py-3 rounded-2xl font-bold">
+                Back to Rooms
+            </a>
         </div>
 
     </div>
-</section>
 
-</body>
-</html>
+</div>
+
+@endsection

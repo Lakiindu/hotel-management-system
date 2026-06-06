@@ -14,16 +14,49 @@ use Illuminate\Support\Facades\Auth;
 class PaymentController extends Controller
 {
     public function index()
-    {
-        $payments = Payment::with('booking.room')
-            ->whereHas('booking', function ($query) {
-                $query->where('user_id', Auth::id());
-            })
-            ->latest()
-            ->paginate(8);
+{
+    $userId = Auth::id();
 
-        return view('customer.payments.index', compact('payments'));
-    }
+    $payments = Payment::with('booking.room')
+        ->whereHas('booking', function ($query) use ($userId) {
+            $query->where('user_id', $userId);
+        })
+        ->latest()
+        ->paginate(8);
+
+    $totalPaid = Payment::where('status', 'paid')
+        ->whereHas('booking', function ($query) use ($userId) {
+            $query->where('user_id', $userId);
+        })
+        ->sum('amount');
+
+    $pendingAmount = Payment::where('status', 'pending')
+        ->whereHas('booking', function ($query) use ($userId) {
+            $query->where('user_id', $userId);
+        })
+        ->sum('amount');
+
+    $paidCount = Payment::where('status', 'paid')
+        ->whereHas('booking', function ($query) use ($userId) {
+            $query->where('user_id', $userId);
+        })
+        ->count();
+
+    $lastPayment = Payment::where('status', 'paid')
+        ->whereHas('booking', function ($query) use ($userId) {
+            $query->where('user_id', $userId);
+        })
+        ->latest('payment_date')
+        ->first();
+
+    return view('customer.payments.index', compact(
+        'payments',
+        'totalPaid',
+        'pendingAmount',
+        'paidCount',
+        'lastPayment'
+    ));
+}
 
     public function pay(Request $request, Payment $payment)
     {
