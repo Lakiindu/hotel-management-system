@@ -23,6 +23,36 @@ class BookingController extends Controller
         return view('admin.bookings.index', compact('bookings', 'status'));
     }
 
+    public function ajaxBookings(Request $request)
+    {
+        $search = $request->search;
+        $status = $request->status;
+
+        $bookings = Booking::with(['user', 'room'])
+            ->when($search, function ($query) use ($search) {
+                $query->where(function ($q) use ($search) {
+                    $q->whereHas('user', function ($userQuery) use ($search) {
+                        $userQuery->where('name', 'like', "%{$search}%")
+                            ->orWhere('email', 'like', "%{$search}%");
+                    })
+                    ->orWhereHas('room', function ($roomQuery) use ($search) {
+                        $roomQuery->where('room_number', 'like', "%{$search}%")
+                            ->orWhere('room_type', 'like', "%{$search}%");
+                    });
+                });
+            })
+            ->when($status, function ($query) use ($status) {
+                $query->where('status', $status);
+            })
+            ->latest()
+            ->get();
+
+        return response()->json([
+            'success' => true,
+            'bookings' => $bookings,
+        ]);
+    }
+
     public function updateStatus(Request $request, Booking $booking)
     {
         $request->validate([
@@ -33,7 +63,6 @@ class BookingController extends Controller
             'status' => $request->status,
         ]);
 
-        // Create payment record when booking is approved
         if ($request->status === 'approved') {
             Payment::firstOrCreate(
                 [
@@ -63,7 +92,6 @@ class BookingController extends Controller
             ]);
         }
 
-        // AJAX / JSON response
         if ($request->expectsJson()) {
             return response()->json([
                 'success' => true,

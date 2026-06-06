@@ -17,10 +17,10 @@
 <div class="flex min-h-screen">
 
     <aside id="sidebar"
-           class="fixed lg:static inset-y-0 left-0 z-50 w-72 bg-slate-950 text-white p-6 transform -translate-x-full lg:translate-x-0 transition-transform duration-300 flex flex-col justify-between">
+           class="fixed lg:static inset-y-0 left-0 z-50 w-72 bg-slate-950 text-white px-6 py-8 transform -translate-x-full lg:translate-x-0 transition-transform duration-300 flex flex-col justify-between">
 
         <div>
-            <div class="flex justify-between items-center mb-10">
+            <div class="flex justify-between items-center mb-16">
                 <h1 class="text-3xl font-extrabold">
                     Hotel<span class="text-amber-400">Admin.</span>
                 </h1>
@@ -30,7 +30,7 @@
                 </button>
             </div>
 
-            <nav class="space-y-3">
+            <nav class="space-y-5">
                 <a href="{{ route('admin.dashboard') }}"
                    class="flex items-center gap-3 px-5 py-3 rounded-2xl {{ request()->routeIs('admin.dashboard') ? 'bg-amber-400 text-slate-950 font-bold' : 'hover:bg-slate-800' }}">
                     <i data-lucide="layout-dashboard" class="w-5"></i> Dashboard
@@ -113,7 +113,7 @@
 
                 <div class="flex items-center gap-4 bg-white p-4 rounded-3xl shadow">
                     <div class="w-12 h-12 rounded-full bg-amber-400 text-slate-950 flex items-center justify-center font-extrabold">
-                        A
+                        {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
                     </div>
 
                     <div>

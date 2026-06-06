@@ -17,7 +17,8 @@ class CustomerController extends Controller
             ->when($search, function ($query) use ($search) {
                 $query->where(function ($q) use ($search) {
                     $q->where('name', 'like', "%{$search}%")
-                      ->orWhere('email', 'like', "%{$search}%");
+                        ->orWhere('email', 'like', "%{$search}%")
+                        ->orWhere('phone', 'like', "%{$search}%");
                 });
             })
             ->when($status !== null && $status !== '', function ($query) use ($status) {
@@ -44,6 +45,31 @@ class CustomerController extends Controller
             'activeCustomers',
             'inactiveCustomers'
         ));
+    }
+
+    public function ajaxCustomers(Request $request)
+    {
+        $search = $request->search;
+        $status = $request->status;
+
+        $customers = User::where('role', 'customer')
+            ->when($search, function ($query) use ($search) {
+                $query->where(function ($q) use ($search) {
+                    $q->where('name', 'like', "%{$search}%")
+                        ->orWhere('email', 'like', "%{$search}%")
+                        ->orWhere('phone', 'like', "%{$search}%");
+                });
+            })
+            ->when($status !== null && $status !== '', function ($query) use ($status) {
+                $query->where('is_active', $status);
+            })
+            ->latest()
+            ->get();
+
+        return response()->json([
+            'success' => true,
+            'customers' => $customers,
+        ]);
     }
 
     public function show(User $user)

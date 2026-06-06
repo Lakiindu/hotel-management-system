@@ -28,6 +28,30 @@ class RoomController extends Controller
         return view('admin.rooms.index', compact('rooms', 'search', 'status'));
     }
 
+    public function ajaxRooms(Request $request)
+    {
+        $search = $request->search;
+        $status = $request->status;
+
+        $rooms = Room::query()
+            ->when($search, function ($query) use ($search) {
+                $query->where(function ($q) use ($search) {
+                    $q->where('room_number', 'like', "%{$search}%")
+                        ->orWhere('room_type', 'like', "%{$search}%");
+                });
+            })
+            ->when($status, function ($query) use ($status) {
+                $query->where('status', $status);
+            })
+            ->latest()
+            ->get();
+
+        return response()->json([
+            'success' => true,
+            'rooms' => $rooms,
+        ]);
+    }
+
     public function create()
     {
         return view('admin.rooms.create');

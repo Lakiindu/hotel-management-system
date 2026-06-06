@@ -22,6 +22,39 @@ class PaymentController extends Controller
         return view('admin.payments.index', compact('payments', 'status'));
     }
 
+    public function ajaxPayments(Request $request)
+    {
+        $search = $request->search;
+        $status = $request->status;
+
+        $payments = Payment::with('booking.user', 'booking.room')
+            ->when($search, function ($query) use ($search) {
+                $query->where(function ($q) use ($search) {
+                    $q->whereHas('booking.user', function ($userQuery) use ($search) {
+                        $userQuery->where('name', 'like', "%{$search}%")
+                            ->orWhere('email', 'like', "%{$search}%");
+                    })
+                    ->orWhereHas('booking.room', function ($roomQuery) use ($search) {
+                        $roomQuery->where('room_number', 'like', "%{$search}%")
+                            ->orWhere('room_type', 'like', "%{$search}%");
+                    })
+                    ->orWhereHas('booking', function ($bookingQuery) use ($search) {
+                        $bookingQuery->where('id', 'like', "%{$search}%");
+                    });
+                });
+            })
+            ->when($status, function ($query) use ($status) {
+                $query->where('status', $status);
+            })
+            ->latest()
+            ->get();
+
+        return response()->json([
+            'success' => true,
+            'payments' => $payments,
+        ]);
+    }
+
     public function confirm(Payment $payment)
     {
         $payment->update([

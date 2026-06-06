@@ -26,7 +26,7 @@ Route::get('/rooms', [FrontendController::class, 'rooms'])
 Route::get('/rooms/{room}', [FrontendController::class, 'roomDetails'])
     ->name('rooms.details');
 
-// AJAX Rooms Route
+// Public AJAX Rooms Route
 Route::get('/ajax/rooms', [FrontendController::class, 'ajaxRooms'])
     ->name('ajax.rooms');
 
@@ -43,6 +43,19 @@ Route::middleware(['auth', 'admin'])
 
         Route::get('/dashboard', [DashboardController::class, 'adminDashboard'])
             ->name('dashboard');
+
+        // Admin AJAX Routes
+        Route::get('/ajax/rooms', [RoomController::class, 'ajaxRooms'])
+            ->name('ajax.rooms');
+
+        Route::get('/ajax/customers', [CustomerController::class, 'ajaxCustomers'])
+            ->name('ajax.customers');
+
+        Route::get('/ajax/bookings', [AdminBookingController::class, 'ajaxBookings'])
+            ->name('ajax.bookings');
+
+        Route::get('/ajax/payments', [AdminPaymentController::class, 'ajaxPayments'])
+            ->name('ajax.payments');
 
         Route::resource('rooms', RoomController::class);
 
@@ -141,7 +154,7 @@ Route::middleware(['auth'])
             ->name('payments.invoice.pdf');
 
         Route::get('/payments/{payment}/invoice/csv', [CustomerPaymentController::class, 'downloadInvoiceCsv'])
-             ->name('payments.invoice.csv');
+            ->name('payments.invoice.csv');
     });
 
 require __DIR__ . '/auth.php';
