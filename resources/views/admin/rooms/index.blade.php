@@ -8,9 +8,35 @@
 
 @section('content')
 
-<div class="flex justify-end mb-6">
+<div class="flex flex-col xl:flex-row xl:items-center justify-between gap-6 mb-8">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 flex-1">
+
+<div class="bg-white p-6 rounded-3xl shadow border-l-4 border-blue-500 hover:-translate-y-2 hover:shadow-2xl transition-all duration-300">            
+    <p class="text-slate-500">Total Rooms</p>
+            <h2 class="text-3xl font-extrabold text-blue-600">
+                {{ $rooms->total() }}
+            </h2>
+        </div>
+
+<div class="bg-white p-6 rounded-3xl shadow border-l-4 border-green-500 hover:-translate-y-2 hover:shadow-2xl transition-all duration-300">            
+    <p class="text-slate-500">Available</p>
+            <h2 class="text-3xl font-extrabold text-green-600">
+                {{ \App\Models\Room::where('status', 'available')->count() }}
+            </h2>
+        </div>
+
+
+<div class="bg-white p-6 rounded-3xl shadow border-l-4 border-red-500 hover:-translate-y-2 hover:shadow-2xl transition-all duration-300">         
+       <p class="text-slate-500">Occupied</p>
+            <h2 class="text-3xl font-extrabold text-red-600">
+                {{ \App\Models\Room::where('status', 'occupied')->count() }}
+            </h2>
+        </div>
+
+    </div>
+
     <a href="{{ route('admin.rooms.create') }}"
-       class="bg-amber-400 text-slate-950 px-6 py-3 rounded-2xl font-bold shadow hover:bg-amber-300">
+       class="bg-amber-400 text-slate-950 px-7 py-4 rounded-2xl font-bold shadow hover:bg-amber-300 transition-all duration-300 text-center">
         + Add Room
     </a>
 </div>
@@ -25,10 +51,11 @@
     <input type="text"
            id="roomSearch"
            value="{{ $search }}"
-           placeholder="Search room number or type"
-           class="border rounded-2xl px-4 py-3">
+           placeholder="Search room number or type..."
+           class="border border-slate-200 rounded-2xl px-4 py-3 focus:ring-2 focus:ring-blue-500 outline-none">
 
-    <select id="roomStatus" class="border rounded-2xl px-4 py-3">
+    <select id="roomStatus"
+            class="border border-slate-200 rounded-2xl px-4 py-3 focus:ring-2 focus:ring-blue-500 outline-none">
         <option value="">All Status</option>
         <option value="available" {{ $status == 'available' ? 'selected' : '' }}>Available</option>
         <option value="occupied" {{ $status == 'occupied' ? 'selected' : '' }}>Occupied</option>
@@ -37,41 +64,54 @@
 
     <button type="button"
             id="roomReset"
-            class="bg-slate-950 text-white rounded-2xl px-4 py-3 font-bold">
+            class="bg-slate-950 text-white rounded-2xl px-4 py-3 font-bold hover:bg-slate-800 transition">
         Reset
     </button>
 </div>
 
 <div class="bg-white rounded-[2rem] shadow overflow-hidden">
     <div class="overflow-x-auto">
-        <table class="w-full min-w-[900px]">
+        <table class="w-full min-w-[950px]">
             <thead class="bg-slate-950 text-white">
                 <tr>
-                    <th class="p-4 text-left">Image</th>
-                    <th class="p-4 text-left">Room</th>
-                    <th class="p-4 text-left">Type</th>
-                    <th class="p-4 text-left">Price</th>
-                    <th class="p-4 text-left">Capacity</th>
-                    <th class="p-4 text-left">Status</th>
-                    <th class="p-4 text-left">Actions</th>
+                    <th class="p-5 text-left">Room</th>
+                    <th class="p-5 text-left">Type</th>
+                    <th class="p-5 text-left">Price</th>
+                    <th class="p-5 text-left">Capacity</th>
+                    <th class="p-5 text-left">Status</th>
+                    <th class="p-5 text-left">Actions</th>
                 </tr>
             </thead>
 
             <tbody id="roomsTableBody">
                 @forelse($rooms as $room)
-                    <tr class="border-b hover:bg-slate-50">
-                        <td class="p-4">
-                            <img src="{{ $room->image ? asset('storage/' . $room->image) : 'https://via.placeholder.com/100' }}"
-                                 class="w-24 h-16 object-cover rounded-2xl">
+                    <tr class="border-b hover:bg-slate-50 transition">
+                        <td class="p-5">
+                            <div class="flex items-center gap-4">
+                                <img src="{{ $room->image ? asset('storage/' . $room->image) : 'https://images.unsplash.com/photo-1590490360182-c33d57733427?auto=format&fit=crop&w=300&q=80' }}"
+                                     class="w-24 h-16 object-cover rounded-2xl shadow">
+
+                                <div>
+                                    <p class="font-extrabold text-slate-900">{{ $room->room_number }}</p>
+                                    <p class="text-sm text-slate-500">Room ID #{{ $room->id }}</p>
+                                </div>
+                            </div>
                         </td>
 
-                        <td class="p-4 font-bold">{{ $room->room_number }}</td>
-                        <td class="p-4">{{ $room->room_type }}</td>
-                        <td class="p-4 font-semibold">Rs. {{ number_format($room->price_per_night, 2) }}</td>
-                        <td class="p-4">{{ $room->capacity }}</td>
+                        <td class="p-5 font-semibold">{{ $room->room_type }}</td>
 
-                        <td class="p-4">
-                            <span class="px-3 py-1 rounded-full text-sm font-semibold
+                        <td class="p-5 font-bold text-purple-600">
+                            Rs. {{ number_format($room->price_per_night, 2) }}
+                        </td>
+
+                        <td class="p-5">
+                            <span class="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-sm font-semibold">
+                                {{ $room->capacity }} Guests
+                            </span>
+                        </td>
+
+                        <td class="p-5">
+                            <span class="px-4 py-2 rounded-full text-sm font-bold
                                 {{ $room->status == 'available' ? 'bg-green-100 text-green-700' : '' }}
                                 {{ $room->status == 'occupied' ? 'bg-red-100 text-red-700' : '' }}
                                 {{ $room->status == 'maintenance' ? 'bg-yellow-100 text-yellow-700' : '' }}">
@@ -79,10 +119,10 @@
                             </span>
                         </td>
 
-                        <td class="p-4">
+                        <td class="p-5">
                             <div class="flex gap-2">
                                 <a href="{{ route('admin.rooms.edit', $room->id) }}"
-                                   class="bg-amber-400 text-slate-950 px-4 py-2 rounded-xl font-bold">
+                                   class="bg-amber-400 text-slate-950 px-4 py-2 rounded-xl font-bold hover:bg-amber-300 transition">
                                     Edit
                                 </a>
 
@@ -93,7 +133,7 @@
                                     @method('DELETE')
 
                                     <button type="button"
-                                            class="delete-btn bg-red-500 text-white px-4 py-2 rounded-xl font-bold">
+                                            class="delete-btn bg-red-500 text-white px-4 py-2 rounded-xl font-bold hover:bg-red-600 transition">
                                         Delete
                                     </button>
                                 </form>
@@ -102,7 +142,7 @@
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="7" class="p-8 text-center text-slate-500">
+                        <td colspan="6" class="p-10 text-center text-slate-500">
                             No rooms found.
                         </td>
                     </tr>
@@ -160,16 +200,14 @@ function loadAdminRooms() {
 
     roomsTableBody.innerHTML = `
         <tr>
-            <td colspan="7" class="p-8 text-center text-slate-500">
+            <td colspan="6" class="p-10 text-center text-slate-500">
                 Loading rooms...
             </td>
         </tr>
     `;
 
     fetch(`{{ route('admin.ajax.rooms') }}?search=${encodeURIComponent(search)}&status=${encodeURIComponent(status)}`, {
-        headers: {
-            'Accept': 'application/json'
-        }
+        headers: { 'Accept': 'application/json' }
     })
     .then(response => response.json())
     .then(data => {
@@ -179,7 +217,7 @@ function loadAdminRooms() {
         if (data.rooms.length === 0) {
             roomsTableBody.innerHTML = `
                 <tr>
-                    <td colspan="7" class="p-8 text-center text-slate-500">
+                    <td colspan="6" class="p-10 text-center text-slate-500">
                         No rooms found.
                     </td>
                 </tr>
@@ -188,30 +226,47 @@ function loadAdminRooms() {
         }
 
         data.rooms.forEach(room => {
-            let image = room.image ? `/storage/${room.image}` : 'https://via.placeholder.com/100';
+            let image = room.image
+                ? `/storage/${room.image}`
+                : 'https://images.unsplash.com/photo-1590490360182-c33d57733427?auto=format&fit=crop&w=300&q=80';
+
             let statusClass = getRoomStatusClass(room.status);
 
             roomsTableBody.innerHTML += `
-                <tr class="border-b hover:bg-slate-50">
-                    <td class="p-4">
-                        <img src="${image}" class="w-24 h-16 object-cover rounded-2xl">
+                <tr class="border-b hover:bg-slate-50 transition">
+                    <td class="p-5">
+                        <div class="flex items-center gap-4">
+                            <img src="${image}" class="w-24 h-16 object-cover rounded-2xl shadow">
+
+                            <div>
+                                <p class="font-extrabold text-slate-900">${room.room_number}</p>
+                                <p class="text-sm text-slate-500">Room ID #${room.id}</p>
+                            </div>
+                        </div>
                     </td>
 
-                    <td class="p-4 font-bold">${room.room_number}</td>
-                    <td class="p-4">${room.room_type}</td>
-                    <td class="p-4 font-semibold">Rs. ${Number(room.price_per_night).toLocaleString()}</td>
-                    <td class="p-4">${room.capacity}</td>
+                    <td class="p-5 font-semibold">${room.room_type}</td>
 
-                    <td class="p-4">
-                        <span class="px-3 py-1 rounded-full text-sm font-semibold ${statusClass}">
+                    <td class="p-5 font-bold text-purple-600">
+                        Rs. ${Number(room.price_per_night).toLocaleString()}
+                    </td>
+
+                    <td class="p-5">
+                        <span class="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-sm font-semibold">
+                            ${room.capacity} Guests
+                        </span>
+                    </td>
+
+                    <td class="p-5">
+                        <span class="px-4 py-2 rounded-full text-sm font-bold ${statusClass}">
                             ${room.status.charAt(0).toUpperCase() + room.status.slice(1)}
                         </span>
                     </td>
 
-                    <td class="p-4">
+                    <td class="p-5">
                         <div class="flex gap-2">
                             <a href="/admin/rooms/${room.id}/edit"
-                               class="bg-amber-400 text-slate-950 px-4 py-2 rounded-xl font-bold">
+                               class="bg-amber-400 text-slate-950 px-4 py-2 rounded-xl font-bold hover:bg-amber-300 transition">
                                 Edit
                             </a>
 
@@ -220,7 +275,7 @@ function loadAdminRooms() {
                                 @method('DELETE')
 
                                 <button type="button"
-                                        class="delete-btn bg-red-500 text-white px-4 py-2 rounded-xl font-bold">
+                                        class="delete-btn bg-red-500 text-white px-4 py-2 rounded-xl font-bold hover:bg-red-600 transition">
                                     Delete
                                 </button>
                             </form>

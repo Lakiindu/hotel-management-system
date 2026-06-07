@@ -1,10 +1,44 @@
 @extends('layouts.admin')
 
 @section('title', 'Manage Bookings')
+
 @section('page-title', 'Booking Management')
+
 @section('page-subtitle', 'Approve, cancel, check-in and complete bookings.')
 
 @section('content')
+
+<div class="grid grid-cols-1 md:grid-cols-4 gap-5 mb-8">
+
+    <div class="bg-white p-6 rounded-3xl shadow border-l-4 border-blue-500 hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
+        <p class="text-slate-500">Total Bookings</p>
+        <h2 class="text-3xl font-extrabold text-blue-600">
+            {{ $bookings->total() }}
+        </h2>
+    </div>
+
+    <div class="bg-white p-6 rounded-3xl shadow border-l-4 border-yellow-500 hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
+        <p class="text-slate-500">Pending</p>
+        <h2 class="text-3xl font-extrabold text-yellow-500">
+            {{ \App\Models\Booking::where('status', 'pending')->count() }}
+        </h2>
+    </div>
+
+    <div class="bg-white p-6 rounded-3xl shadow border-l-4 border-green-500 hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
+        <p class="text-slate-500">Completed</p>
+        <h2 class="text-3xl font-extrabold text-green-600">
+            {{ \App\Models\Booking::where('status', 'completed')->count() }}
+        </h2>
+    </div>
+
+    <div class="bg-white p-6 rounded-3xl shadow border-l-4 border-purple-500 hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
+        <p class="text-slate-500">Booking Revenue</p>
+        <h2 class="text-2xl font-extrabold text-purple-600">
+            Rs. {{ number_format(\App\Models\Booking::sum('total_amount'), 2) }}
+        </h2>
+    </div>
+
+</div>
 
 @if(session('success'))
     <div class="bg-green-100 text-green-700 p-4 rounded-2xl mb-6">
@@ -16,9 +50,10 @@
     <input type="text"
            id="bookingSearch"
            placeholder="Search customer, email, room..."
-           class="border rounded-2xl px-4 py-3">
+           class="border border-slate-200 rounded-2xl px-4 py-3 focus:ring-2 focus:ring-blue-500 outline-none">
 
-    <select id="bookingStatus" class="border rounded-2xl px-4 py-3">
+    <select id="bookingStatus"
+            class="border border-slate-200 rounded-2xl px-4 py-3 focus:ring-2 focus:ring-blue-500 outline-none">
         <option value="">All Bookings</option>
         <option value="pending" {{ $status == 'pending' ? 'selected' : '' }}>Pending</option>
         <option value="approved" {{ $status == 'approved' ? 'selected' : '' }}>Approved</option>
@@ -28,54 +63,70 @@
         <option value="completed" {{ $status == 'completed' ? 'selected' : '' }}>Completed</option>
     </select>
 
-    <button type="button" id="bookingReset"
-            class="bg-slate-950 text-white px-6 py-3 rounded-2xl font-bold">
+    <button type="button"
+            id="bookingReset"
+            class="bg-slate-950 text-white px-6 py-3 rounded-2xl font-bold hover:bg-slate-800 transition">
         Reset
     </button>
 </div>
 
 <div class="bg-white rounded-[2rem] shadow overflow-hidden">
     <div class="overflow-x-auto">
-        <table class="w-full min-w-[1100px]">
+        <table class="w-full min-w-[1200px]">
             <thead class="bg-slate-950 text-white">
                 <tr>
-                    <th class="p-4 text-left">Customer</th>
-                    <th class="p-4 text-left">Room</th>
-                    <th class="p-4 text-left">Dates</th>
-                    <th class="p-4 text-left">Guests</th>
-                    <th class="p-4 text-left">Amount</th>
-                    <th class="p-4 text-left">Status</th>
-                    <th class="p-4 text-left">Action</th>
+                    <th class="p-5 text-left">Booking</th>
+                    <th class="p-5 text-left">Customer</th>
+                    <th class="p-5 text-left">Room</th>
+                    <th class="p-5 text-left">Dates</th>
+                    <th class="p-5 text-left">Guests</th>
+                    <th class="p-5 text-left">Amount</th>
+                    <th class="p-5 text-left">Status</th>
+                    <th class="p-5 text-left">Action</th>
                 </tr>
             </thead>
 
             <tbody id="bookingsTableBody">
                 @forelse($bookings as $booking)
-                    <tr class="border-b hover:bg-slate-50">
-                        <td class="p-4">
+                    <tr class="border-b hover:bg-slate-50 transition">
+                        <td class="p-5">
+                            <p class="font-extrabold text-blue-600">
+                                #{{ $booking->id }}
+                            </p>
+                            <p class="text-sm text-slate-500">
+                                {{ $booking->created_at->format('Y-m-d') }}
+                            </p>
+                        </td>
+
+                        <td class="p-5">
                             <p class="font-bold">{{ $booking->user->name }}</p>
                             <p class="text-sm text-slate-500">{{ $booking->user->email }}</p>
                         </td>
 
-                        <td class="p-4">
+                        <td class="p-5">
                             <p class="font-bold">{{ $booking->room->room_type }}</p>
-                            <p class="text-sm text-slate-500">{{ $booking->room->room_number }}</p>
+                            <p class="text-sm text-slate-500">Room No: {{ $booking->room->room_number }}</p>
                         </td>
 
-                        <td class="p-4 text-sm">
-                            {{ $booking->check_in_date->format('Y-m-d') }}
-                            <br><span class="text-slate-400">to</span><br>
-                            {{ $booking->check_out_date->format('Y-m-d') }}
+                        <td class="p-5 text-sm">
+                            <div class="bg-slate-50 rounded-2xl p-3">
+                                <p><span class="text-slate-500">In:</span> <strong>{{ $booking->check_in_date->format('Y-m-d') }}</strong></p>
+                                <p><span class="text-slate-500">Out:</span> <strong>{{ $booking->check_out_date->format('Y-m-d') }}</strong></p>
+                            </div>
                         </td>
 
-                        <td class="p-4">{{ $booking->guests }}</td>
+                        <td class="p-5">
+                            <span class="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-sm font-semibold">
+                                {{ $booking->guests }} Guests
+                            </span>
+                        </td>
 
-                        <td class="p-4 font-bold">
+                        <td class="p-5 font-bold text-purple-600">
                             Rs. {{ number_format($booking->total_amount, 2) }}
                         </td>
 
-                        <td class="p-4">
-                            <span class="px-3 py-1 rounded-full text-sm font-semibold
+                        <td class="p-5">
+                            <span class="px-4 py-2 rounded-full text-sm font-bold
                                 {{ $booking->status == 'pending' ? 'bg-yellow-100 text-yellow-700' : '' }}
                                 {{ $booking->status == 'approved' ? 'bg-blue-100 text-blue-700' : '' }}
                                 {{ $booking->status == 'cancelled' ? 'bg-red-100 text-red-700' : '' }}
@@ -86,14 +137,14 @@
                             </span>
                         </td>
 
-                        <td class="p-4">
+                        <td class="p-5">
                             <form method="POST"
                                   action="{{ route('admin.bookings.updateStatus', $booking->id) }}"
                                   class="status-form flex gap-2">
                                 @csrf
                                 @method('PATCH')
 
-                                <select name="status" class="border rounded-xl px-3 py-2">
+                                <select name="status" class="border border-slate-200 rounded-xl px-3 py-2 focus:ring-2 focus:ring-blue-500 outline-none">
                                     <option value="approved">Approve</option>
                                     <option value="cancelled">Cancel</option>
                                     <option value="checked_in">Check In</option>
@@ -102,7 +153,7 @@
                                 </select>
 
                                 <button type="button"
-                                        class="update-btn bg-blue-600 text-white px-4 py-2 rounded-xl font-bold">
+                                        class="update-btn bg-blue-600 text-white px-4 py-2 rounded-xl font-bold hover:bg-blue-700 transition">
                                     Update
                                 </button>
                             </form>
@@ -110,7 +161,7 @@
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="7" class="p-8 text-center text-slate-500">
+                        <td colspan="8" class="p-10 text-center text-slate-500">
                             No bookings found.
                         </td>
                     </tr>
@@ -196,16 +247,14 @@ function loadAdminBookings() {
 
     bookingsTableBody.innerHTML = `
         <tr>
-            <td colspan="7" class="p-8 text-center text-slate-500">
+            <td colspan="8" class="p-10 text-center text-slate-500">
                 Loading bookings...
             </td>
         </tr>
     `;
 
     fetch(`{{ route('admin.ajax.bookings') }}?search=${encodeURIComponent(search)}&status=${encodeURIComponent(status)}`, {
-        headers: {
-            'Accept': 'application/json'
-        }
+        headers: { 'Accept': 'application/json' }
     })
     .then(response => response.json())
     .then(data => {
@@ -215,7 +264,7 @@ function loadAdminBookings() {
         if (data.bookings.length === 0) {
             bookingsTableBody.innerHTML = `
                 <tr>
-                    <td colspan="7" class="p-8 text-center text-slate-500">
+                    <td colspan="8" class="p-10 text-center text-slate-500">
                         No bookings found.
                     </td>
                 </tr>
@@ -225,43 +274,53 @@ function loadAdminBookings() {
 
         data.bookings.forEach(booking => {
             bookingsTableBody.innerHTML += `
-                <tr class="border-b hover:bg-slate-50">
-                    <td class="p-4">
+                <tr class="border-b hover:bg-slate-50 transition">
+                    <td class="p-5">
+                        <p class="font-extrabold text-blue-600">#${booking.id}</p>
+                        <p class="text-sm text-slate-500">${booking.created_at ? booking.created_at.substring(0, 10) : '-'}</p>
+                    </td>
+
+                    <td class="p-5">
                         <p class="font-bold">${booking.user.name}</p>
                         <p class="text-sm text-slate-500">${booking.user.email}</p>
                     </td>
 
-                    <td class="p-4">
+                    <td class="p-5">
                         <p class="font-bold">${booking.room.room_type}</p>
-                        <p class="text-sm text-slate-500">${booking.room.room_number}</p>
+                        <p class="text-sm text-slate-500">Room No: ${booking.room.room_number}</p>
                     </td>
 
-                    <td class="p-4 text-sm">
-                        ${booking.check_in_date}
-                        <br><span class="text-slate-400">to</span><br>
-                        ${booking.check_out_date}
+                    <td class="p-5 text-sm">
+                        <div class="bg-slate-50 rounded-2xl p-3">
+                            <p><span class="text-slate-500">In:</span> <strong>${booking.check_in_date}</strong></p>
+                            <p><span class="text-slate-500">Out:</span> <strong>${booking.check_out_date}</strong></p>
+                        </div>
                     </td>
 
-                    <td class="p-4">${booking.guests}</td>
+                    <td class="p-5">
+                        <span class="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-sm font-semibold">
+                            ${booking.guests} Guests
+                        </span>
+                    </td>
 
-                    <td class="p-4 font-bold">
+                    <td class="p-5 font-bold text-purple-600">
                         Rs. ${Number(booking.total_amount).toLocaleString()}
                     </td>
 
-                    <td class="p-4">
-                        <span class="px-3 py-1 rounded-full text-sm font-semibold ${statusClass(booking.status)}">
+                    <td class="p-5">
+                        <span class="px-4 py-2 rounded-full text-sm font-bold ${statusClass(booking.status)}">
                             ${formatStatus(booking.status)}
                         </span>
                     </td>
 
-                    <td class="p-4">
+                    <td class="p-5">
                         <form method="POST"
                               action="/admin/bookings/${booking.id}/status"
                               class="status-form flex gap-2">
                             @csrf
                             @method('PATCH')
 
-                            <select name="status" class="border rounded-xl px-3 py-2">
+                            <select name="status" class="border border-slate-200 rounded-xl px-3 py-2 focus:ring-2 focus:ring-blue-500 outline-none">
                                 <option value="approved">Approve</option>
                                 <option value="cancelled">Cancel</option>
                                 <option value="checked_in">Check In</option>
@@ -270,7 +329,7 @@ function loadAdminBookings() {
                             </select>
 
                             <button type="button"
-                                    class="update-btn bg-blue-600 text-white px-4 py-2 rounded-xl font-bold">
+                                    class="update-btn bg-blue-600 text-white px-4 py-2 rounded-xl font-bold hover:bg-blue-700 transition">
                                 Update
                             </button>
                         </form>

@@ -12,15 +12,15 @@
     @stack('styles')
 </head>
 
-<body class="bg-slate-100 text-slate-900">
+<body class="bg-slate-100 text-slate-900 overflow-hidden">
 
-<div class="flex min-h-screen">
+<div class="min-h-screen">
 
     <aside id="sidebar"
-           class="fixed lg:static inset-y-0 left-0 z-50 w-72 bg-slate-950 text-white px-6 py-8 transform -translate-x-full lg:translate-x-0 transition-transform duration-300 flex flex-col justify-between">
+           class="fixed inset-y-0 left-0 z-50 w-72 bg-slate-950 text-white px-6 py-8 transform -translate-x-full lg:translate-x-0 transition-transform duration-300 flex flex-col justify-between">
 
         <div>
-            <div class="flex justify-between items-center mb-16">
+            <div class="flex justify-between items-center mb-14">
                 <h1 class="text-3xl font-extrabold">
                     Hotel<span class="text-amber-400">Admin.</span>
                 </h1>
@@ -30,39 +30,46 @@
                 </button>
             </div>
 
-            <nav class="space-y-5">
+            <nav class="space-y-4">
                 <a href="{{ route('admin.dashboard') }}"
-                   class="flex items-center gap-3 px-5 py-3 rounded-2xl {{ request()->routeIs('admin.dashboard') ? 'bg-amber-400 text-slate-950 font-bold' : 'hover:bg-slate-800' }}">
+                   class="flex items-center gap-4 px-5 py-3 rounded-2xl transition
+                   {{ request()->routeIs('admin.dashboard') ? 'bg-amber-400 text-slate-950 font-bold' : 'hover:bg-slate-800' }}">
                     <i data-lucide="layout-dashboard" class="w-5"></i> Dashboard
                 </a>
 
                 <a href="{{ route('admin.rooms.index') }}"
-                   class="flex items-center gap-3 px-5 py-3 rounded-2xl {{ request()->routeIs('admin.rooms.*') ? 'bg-amber-400 text-slate-950 font-bold' : 'hover:bg-slate-800' }}">
+                   class="flex items-center gap-4 px-5 py-3 rounded-2xl transition
+                   {{ request()->routeIs('admin.rooms.*') ? 'bg-amber-400 text-slate-950 font-bold' : 'hover:bg-slate-800' }}">
                     <i data-lucide="bed-double" class="w-5"></i> Rooms
                 </a>
 
                 <a href="{{ route('admin.bookings.index') }}"
-                   class="flex items-center gap-3 px-5 py-3 rounded-2xl {{ request()->routeIs('admin.bookings.*') ? 'bg-amber-400 text-slate-950 font-bold' : 'hover:bg-slate-800' }}">
+                   class="flex items-center gap-4 px-5 py-3 rounded-2xl transition
+                   {{ request()->routeIs('admin.bookings.*') ? 'bg-amber-400 text-slate-950 font-bold' : 'hover:bg-slate-800' }}">
                     <i data-lucide="calendar-check" class="w-5"></i> Bookings
                 </a>
 
                 <a href="{{ route('admin.customers.index') }}"
-                   class="flex items-center gap-3 px-5 py-3 rounded-2xl {{ request()->routeIs('admin.customers.*') ? 'bg-amber-400 text-slate-950 font-bold' : 'hover:bg-slate-800' }}">
+                   class="flex items-center gap-4 px-5 py-3 rounded-2xl transition
+                   {{ request()->routeIs('admin.customers.*') ? 'bg-amber-400 text-slate-950 font-bold' : 'hover:bg-slate-800' }}">
                     <i data-lucide="users" class="w-5"></i> Customers
                 </a>
 
                 <a href="{{ route('admin.payments.index') }}"
-                   class="flex items-center gap-3 px-5 py-3 rounded-2xl {{ request()->routeIs('admin.payments.*') ? 'bg-amber-400 text-slate-950 font-bold' : 'hover:bg-slate-800' }}">
+                   class="flex items-center gap-4 px-5 py-3 rounded-2xl transition
+                   {{ request()->routeIs('admin.payments.*') ? 'bg-amber-400 text-slate-950 font-bold' : 'hover:bg-slate-800' }}">
                     <i data-lucide="credit-card" class="w-5"></i> Payments
                 </a>
 
                 <a href="{{ route('admin.reviews.index') }}"
-                   class="flex items-center gap-3 px-5 py-3 rounded-2xl {{ request()->routeIs('admin.reviews.*') ? 'bg-amber-400 text-slate-950 font-bold' : 'hover:bg-slate-800' }}">
+                   class="flex items-center gap-4 px-5 py-3 rounded-2xl transition
+                   {{ request()->routeIs('admin.reviews.*') ? 'bg-amber-400 text-slate-950 font-bold' : 'hover:bg-slate-800' }}">
                     <i data-lucide="star" class="w-5"></i> Reviews
                 </a>
 
                 <a href="{{ route('admin.reports.index') }}"
-                   class="flex items-center gap-3 px-5 py-3 rounded-2xl {{ request()->routeIs('admin.reports.*') ? 'bg-amber-400 text-slate-950 font-bold' : 'hover:bg-slate-800' }}">
+                   class="flex items-center gap-4 px-5 py-3 rounded-2xl transition
+                   {{ request()->routeIs('admin.reports.*') ? 'bg-amber-400 text-slate-950 font-bold' : 'hover:bg-slate-800' }}">
                     <i data-lucide="bar-chart-3" class="w-5"></i> Reports
                 </a>
             </nav>
@@ -70,7 +77,7 @@
 
         <form method="POST" action="{{ route('logout') }}">
             @csrf
-            <button class="w-full flex items-center justify-center gap-2 bg-red-500 text-white px-5 py-3 rounded-2xl font-bold hover:bg-red-600">
+            <button class="w-full flex items-center justify-center gap-2 bg-red-500 text-white px-5 py-3 rounded-2xl font-bold hover:bg-red-600 transition">
                 <i data-lucide="log-out" class="w-5"></i>
                 Logout
             </button>
@@ -79,9 +86,9 @@
 
     <div id="sidebarOverlay" class="fixed inset-0 bg-black/40 z-40 hidden lg:hidden"></div>
 
-    <main class="flex-1 p-6 lg:p-10">
+    <header class="fixed top-0 left-0 lg:left-72 right-0 z-40 bg-slate-100/95 backdrop-blur border-b border-slate-200">
+        <div class="px-6 lg:px-10 py-6 flex justify-between items-center">
 
-        <div class="flex justify-between items-center mb-8">
             <div class="flex items-center gap-4">
                 <button id="openSidebar" type="button"
                         class="lg:hidden bg-white p-3 rounded-2xl shadow">
@@ -120,9 +127,7 @@
                          class="hidden absolute right-0 mt-3 w-96 bg-white rounded-3xl shadow-xl z-50 overflow-hidden">
 
                         <div class="p-5 border-b flex justify-between items-center">
-                            <h3 class="font-bold text-slate-800">
-                                Notifications
-                            </h3>
+                            <h3 class="font-bold text-slate-800">Notifications</h3>
 
                             <form method="POST" action="{{ route('notifications.readAll') }}">
                                 @csrf
@@ -182,10 +187,12 @@
                     </div>
                 </div>
             </div>
+
         </div>
+    </header>
 
+    <main class="lg:ml-72 h-screen overflow-y-auto pt-44 px-6 lg:px-10 pb-10">
         @yield('content')
-
     </main>
 
 </div>
