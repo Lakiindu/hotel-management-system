@@ -62,14 +62,20 @@
                 </a>
 
                 <a href="{{ route('admin.reviews.index') }}"
-                   class="flex items-center gap-4 px-5 py-3 rounded-2xl transition
-                   {{ request()->routeIs('admin.reviews.*') ? 'bg-amber-400 text-slate-950 font-bold' : 'hover:bg-slate-800' }}">
+                class="flex items-center gap-4 px-5 py-3 rounded-2xl transition
+                {{ request()->routeIs('admin.reviews.*') ? 'bg-amber-400 text-slate-950 font-bold' : 'hover:bg-slate-800' }}">
                     <i data-lucide="star" class="w-5"></i> Reviews
                 </a>
 
+                <a href="{{ route('admin.contacts.index') }}"
+                class="flex items-center gap-4 px-5 py-3 rounded-2xl transition
+                {{ request()->routeIs('admin.contacts.*') ? 'bg-amber-400 text-slate-950 font-bold' : 'hover:bg-slate-800' }}">
+                    <i data-lucide="mail" class="w-5"></i> Contact Messages
+                </a>
+
                 <a href="{{ route('admin.reports.index') }}"
-                   class="flex items-center gap-4 px-5 py-3 rounded-2xl transition
-                   {{ request()->routeIs('admin.reports.*') ? 'bg-amber-400 text-slate-950 font-bold' : 'hover:bg-slate-800' }}">
+                class="flex items-center gap-4 px-5 py-3 rounded-2xl transition
+                {{ request()->routeIs('admin.reports.*') ? 'bg-amber-400 text-slate-950 font-bold' : 'hover:bg-slate-800' }}">
                     <i data-lucide="bar-chart-3" class="w-5"></i> Reports
                 </a>
             </nav>
@@ -141,7 +147,8 @@
 
                         <div class="max-h-96 overflow-y-auto">
                             @forelse(auth()->user()->notifications()->latest()->take(8)->get() as $notification)
-                                <div class="p-5 border-b {{ $notification->is_read ? 'bg-white' : 'bg-amber-50' }}">
+                                <a href="{{ $notification->url ?? '#' }}"
+                                 class="block p-5 border-b {{ $notification->is_read ? 'bg-white' : 'bg-amber-50' }}">
                                     <h4 class="font-bold text-slate-800">
                                         {{ $notification->title }}
                                     </h4>
@@ -166,7 +173,7 @@
                                             </button>
                                         </form>
                                     @endif
-                                </div>
+                                </a>
                             @empty
                                 <div class="p-6 text-center text-slate-500">
                                     No notifications yet.

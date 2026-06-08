@@ -3,6 +3,7 @@
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\FrontendController;
 use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\ContactController;
 
 use App\Http\Controllers\Admin\RoomController;
 use App\Http\Controllers\Admin\CustomerController;
@@ -10,6 +11,7 @@ use App\Http\Controllers\Admin\BookingController as AdminBookingController;
 use App\Http\Controllers\Admin\PaymentController as AdminPaymentController;
 use App\Http\Controllers\Admin\ReviewController as AdminReviewController;
 use App\Http\Controllers\Admin\ReportController;
+use App\Http\Controllers\Admin\ContactController as AdminContactController;
 
 use App\Http\Controllers\Customer\BookingController as CustomerBookingController;
 use App\Http\Controllers\Customer\PaymentController as CustomerPaymentController;
@@ -26,6 +28,10 @@ Route::get('/rooms', [FrontendController::class, 'rooms'])
 
 Route::get('/rooms/{room}', [FrontendController::class, 'roomDetails'])
     ->name('rooms.details');
+
+// Contact Form Route
+Route::post('/contact', [ContactController::class, 'store'])
+    ->name('contact.store');
 
 // Public AJAX Rooms Route
 Route::get('/ajax/rooms', [FrontendController::class, 'ajaxRooms'])
@@ -97,6 +103,15 @@ Route::middleware(['auth', 'admin'])
 
         Route::delete('/reviews/{review}', [AdminReviewController::class, 'destroy'])
             ->name('reviews.destroy');
+
+        Route::get('/contacts', [AdminContactController::class, 'index'])
+            ->name('contacts.index');
+
+        Route::get('/contacts/{contact}', [AdminContactController::class, 'show'])
+            ->name('contacts.show');
+
+        Route::delete('/contacts/{contact}', [AdminContactController::class, 'destroy'])
+            ->name('contacts.destroy');
 
         Route::get('/reports', [ReportController::class, 'index'])
             ->name('reports.index');
