@@ -12,6 +12,9 @@ use App\Http\Controllers\Admin\PaymentController as AdminPaymentController;
 use App\Http\Controllers\Admin\ReviewController as AdminReviewController;
 use App\Http\Controllers\Admin\ReportController;
 use App\Http\Controllers\Admin\ContactController as AdminContactController;
+use App\Http\Controllers\Admin\ServiceController;
+use App\Http\Controllers\Admin\GalleryController;
+use App\Http\Controllers\Admin\HotelContentController;
 
 use App\Http\Controllers\Customer\BookingController as CustomerBookingController;
 use App\Http\Controllers\Customer\PaymentController as CustomerPaymentController;
@@ -121,6 +124,18 @@ Route::middleware(['auth', 'admin'])
 
         Route::get('/reports/export/pdf', [ReportController::class, 'exportPdf'])
             ->name('reports.export.pdf');
+
+        /*
+        |--------------------------------------------------------------------------
+        | Website Management
+        |--------------------------------------------------------------------------
+        */
+
+        Route::resource('services', ServiceController::class);
+
+        Route::resource('galleries', GalleryController::class);
+
+        Route::resource('hotel-contents', HotelContentController::class);
     });
 
 // Customer Routes

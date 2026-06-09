@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Room;
+use App\Models\Service;
 use Illuminate\Http\Request;
 
 class FrontendController extends Controller
@@ -14,7 +15,11 @@ class FrontendController extends Controller
             ->take(3)
             ->get();
 
-        return view('frontend.home', compact('rooms'));
+        $services = Service::where('is_active', true)
+            ->latest()
+            ->get();
+
+        return view('frontend.home', compact('rooms', 'services'));
     }
 
     public function rooms(Request $request)

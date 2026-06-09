@@ -74,10 +74,38 @@
                 </a>
 
                 <a href="{{ route('admin.reports.index') }}"
-                class="flex items-center gap-4 px-5 py-3 rounded-2xl transition
-                {{ request()->routeIs('admin.reports.*') ? 'bg-amber-400 text-slate-950 font-bold' : 'hover:bg-slate-800' }}">
-                    <i data-lucide="bar-chart-3" class="w-5"></i> Reports
-                </a>
+class="flex items-center gap-4 px-5 py-3 rounded-2xl transition
+{{ request()->routeIs('admin.reports.*') ? 'bg-amber-400 text-slate-950 font-bold' : 'hover:bg-slate-800' }}">
+    <i data-lucide="bar-chart-3" class="w-5"></i> Reports
+</a>
+
+<!-- Website Management -->
+<div class="mt-8">
+    <p class="px-2 text-xs font-bold uppercase tracking-wider text-slate-400 mb-3">
+        Website Management
+    </p>
+
+    <a href="{{ route('admin.hotel-contents.index') }}"
+       class="flex items-center gap-4 px-5 py-3 rounded-2xl transition
+       {{ request()->routeIs('admin.hotel-contents.*') ? 'bg-amber-400 text-slate-950 font-bold' : 'hover:bg-slate-800' }}">
+        <i data-lucide="file-text" class="w-5"></i>
+        Home Content
+    </a>
+
+    <a href="{{ route('admin.services.index') }}"
+       class="flex items-center gap-4 px-5 py-3 rounded-2xl transition
+       {{ request()->routeIs('admin.services.*') ? 'bg-amber-400 text-slate-950 font-bold' : 'hover:bg-slate-800' }}">
+        <i data-lucide="concierge-bell" class="w-5"></i>
+        Services
+    </a>
+
+    <a href="{{ route('admin.galleries.index') }}"
+       class="flex items-center gap-4 px-5 py-3 rounded-2xl transition
+       {{ request()->routeIs('admin.galleries.*') ? 'bg-amber-400 text-slate-950 font-bold' : 'hover:bg-slate-800' }}">
+        <i data-lucide="images" class="w-5"></i>
+        Gallery
+    </a>
+</div>
             </nav>
         </div>
 

@@ -298,35 +298,37 @@
 
         <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
 
-            @php
-            $services = [
-                ['Restaurant','fa-utensils'],
-                ['Swimming Pool','fa-person-swimming'],
-                ['Gym','fa-dumbbell'],
-                ['Spa','fa-spa'],
-                ['Conference Hall','fa-building'],
-                ['Room Service','fa-bell-concierge']
-            ];
-            @endphp
+            @forelse($services as $service)
 
-            @foreach($services as $service)
+<div
+    data-aos="zoom-in"
+    class="group bg-slate-100 hover:bg-slate-950 hover:text-white rounded-[2rem] p-10 transition duration-500 hover:-translate-y-2 hover:shadow-2xl">
 
-            <div
-                data-aos="zoom-in"
-                class="group bg-slate-100 hover:bg-slate-950 hover:text-white rounded-[2rem] p-10 transition duration-500 hover:-translate-y-2 hover:shadow-2xl">                     
-                <i class="fa-solid {{ $service[1] }} text-amber-500 text-5xl mb-6"></i>
+    @if($service->image)
+        <img src="{{ asset('storage/' . $service->image) }}"
+             alt="{{ $service->title }}"
+             class="w-full h-48 object-cover rounded-2xl mb-6">
+    @endif
 
-                <h3 class="text-3xl font-bold mb-4">
-                    {{ $service[0] }}
-                </h3>
+    <i class="{{ $service->icon }} text-amber-500 text-5xl mb-6"></i>
 
-                <p class="text-slate-500 group-hover:text-white">
-                    Enjoy premium hotel facilities and world-class service.
-                </p>
+    <h3 class="text-3xl font-bold mb-4">
+        {{ $service->title }}
+    </h3>
 
-            </div>
+    <p class="text-slate-500 group-hover:text-white">
+        {{ $service->description }}
+    </p>
 
-            @endforeach
+</div>
+
+@empty
+
+<p class="col-span-3 text-center text-slate-500">
+    No services available.
+</p>
+
+@endforelse
 
         </div>
 

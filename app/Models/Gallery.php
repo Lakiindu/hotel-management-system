@@ -6,5 +6,15 @@ use Illuminate\Database\Eloquent\Model;
 
 class Gallery extends Model
 {
-    //
+    protected $fillable = [
+        'title',
+        'image',
+        'category',
+        'description',
+        'is_active',
+    ];
+
+    protected $casts = [
+        'is_active' => 'boolean',
+    ];
 }
