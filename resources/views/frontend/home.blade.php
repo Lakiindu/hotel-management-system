@@ -225,8 +225,10 @@
                 class="bg-white rounded-[2rem] overflow-hidden shadow-lg hover:-translate-y-2 hover:shadow-2xl transition duration-500">
 
                 <img src="{{ $room->image ? asset('storage/'.$room->image) : 'https://images.unsplash.com/photo-1566665797739-1674de7a421a?auto=format&fit=crop&w=900&q=80' }}"
-                     class="h-64 w-full object-cover"
-                     alt="{{ $room->room_type }}">
+                class="h-64 w-full object-cover"
+                alt="{{ $room->room_type }}"
+                loading="lazy"
+                decoding="async">
 
                 <div class="p-7">
 
@@ -306,8 +308,10 @@
 
     @if($service->image)
         <img src="{{ asset('storage/' . $service->image) }}"
-             alt="{{ $service->title }}"
-             class="w-full h-48 object-cover rounded-2xl mb-6">
+            alt="{{ $service->title ?? 'Service Image' }}"
+            loading="lazy"
+            decoding="async"
+            class="w-full h-48 object-cover rounded-2xl mb-6">
     @endif
 
     <i class="{{ $service->icon }} text-amber-500 text-5xl mb-6"></i>
@@ -352,35 +356,52 @@
 
         <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
 
-            @php
-            $gallery = [
-            ['Luxury Pool','https://images.unsplash.com/photo-1578683010236-d716f9a3f461'],
-            ['Modern Room','https://images.unsplash.com/photo-1566073771259-6a8506099945'],
-            ['Beach View','https://images.unsplash.com/photo-1542314831-068cd1dbfeeb'],
-            ['Premium Stay','https://images.unsplash.com/photo-1582719478250-c89cae4dc85b']
-            ];
-            @endphp
+        @forelse($galleries as $gallery)
 
-            @foreach($gallery as $image)
+<div
+    data-aos="fade-up"
+    class="group relative rounded-[2rem] overflow-hidden shadow-lg h-72">
 
-            <div
-                data-aos="fade-up"
-                class="relative overflow-hidden rounded-[2rem] group">
+    <img src="{{ asset('storage/' . $gallery->image) }}"
+         alt="{{ $gallery->title ?? 'Gallery Image' }}"
+         loading="lazy"
+         decoding="async"
+         class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
 
-                <img src="{{ $image[1] }}?auto=format&fit=crop&w=800&q=80"
-                     class="h-80 w-full object-cover group-hover:scale-110 transition duration-700">
+    <div class="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition duration-300 flex items-end">
 
-                <div class="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition flex items-center justify-center">
+        <div class="p-5 text-white">
 
-                    <h3 class="text-white text-2xl font-extrabold">
-                        {{ $image[0] }}
-                    </h3>
+            <h3 class="text-2xl font-extrabold">
+                {{ $gallery->title }}
+            </h3>
 
-                </div>
+            <p class="text-sm text-slate-200">
+                {{ $gallery->category }}
+            </p>
 
-            </div>
+        </div>
 
-            @endforeach
+    </div>
+
+</div>
+
+@empty
+
+<div class="lg:col-span-4 bg-white rounded-3xl p-10 text-center shadow">
+
+    <h3 class="text-2xl font-bold text-slate-900">
+        No gallery images yet
+    </h3>
+
+    <p class="text-slate-500 mt-2">
+        Gallery images will appear here after admin uploads them.
+    </p>
+
+</div>
+
+@endforelse         
+
 
         </div>
 
@@ -530,8 +551,10 @@
 
 <script>
 AOS.init({
-    duration: 1000,
-    once: true
+    duration: 500,
+    once: true,
+    offset: 50,
+    easing: 'ease-out'
 });
 
 const btn = document.getElementById('mobileMenuBtn');

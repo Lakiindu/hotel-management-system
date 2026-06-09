@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Room;
 use App\Models\Service;
+use App\Models\Gallery;
 use Illuminate\Http\Request;
 
 class FrontendController extends Controller
@@ -19,7 +20,16 @@ class FrontendController extends Controller
             ->latest()
             ->get();
 
-        return view('frontend.home', compact('rooms', 'services'));
+        $galleries = Gallery::where('is_active', true)
+            ->latest()
+            ->take(8)
+            ->get();
+
+        return view('frontend.home', compact(
+            'rooms',
+            'services',
+            'galleries'
+        ));
     }
 
     public function rooms(Request $request)

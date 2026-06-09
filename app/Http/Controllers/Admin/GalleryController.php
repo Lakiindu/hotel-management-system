@@ -10,10 +10,11 @@ use Illuminate\Support\Facades\Storage;
 class GalleryController extends Controller
 {
     public function index()
-    {
-        $galleries = Gallery::latest()->paginate(10);
-        return view('admin.galleries.index', compact('galleries'));
-    }
+{
+    $galleries = Gallery::latest()->paginate(6);
+
+    return view('admin.galleries.index', compact('galleries'));
+}
 
     public function create()
     {
@@ -26,7 +27,7 @@ class GalleryController extends Controller
             'title' => 'nullable|string|max:255',
             'category' => 'nullable|string|max:255',
             'description' => 'nullable|string',
-            'image' => 'required|image|mimes:jpg,jpeg,png,webp|max:2048',
+            'image' => 'required|image|mimes:jpg,jpeg,png,webp|max:10240',
             'is_active' => 'nullable|boolean',
         ]);
 
@@ -55,7 +56,7 @@ class GalleryController extends Controller
             'title' => 'nullable|string|max:255',
             'category' => 'nullable|string|max:255',
             'description' => 'nullable|string',
-            'image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+            'image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:10240',
             'is_active' => 'nullable|boolean',
         ]);
 
