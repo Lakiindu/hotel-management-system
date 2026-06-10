@@ -17,8 +17,8 @@
 <div class="min-h-screen">
 
     <aside id="sidebar"
-           class="fixed inset-y-0 left-0 z-50 w-72 bg-slate-950 text-white px-6 py-8 transform -translate-x-full lg:translate-x-0 transition-transform duration-300 flex flex-col justify-between">
-
+    class="fixed inset-y-0 left-0 z-50 w-72 bg-slate-950 text-white px-6 py-8 transform -translate-x-full lg:translate-x-0 
+    transition-transform duration-300 flex flex-col">
         <div>
             <div class="flex justify-between items-center mb-14">
                 <h1 class="text-3xl font-extrabold">
@@ -30,7 +30,7 @@
                 </button>
             </div>
 
-            <nav class="space-y-4">
+            <nav class="space-y-2">
                 <a href="{{ route('admin.dashboard') }}"
                    class="flex items-center gap-4 px-5 py-3 rounded-2xl transition
                    {{ request()->routeIs('admin.dashboard') ? 'bg-amber-400 text-slate-950 font-bold' : 'hover:bg-slate-800' }}">
@@ -80,8 +80,8 @@ class="flex items-center gap-4 px-5 py-3 rounded-2xl transition
 </a>
 
 <!-- Website Management -->
-<div class="mt-8">
-    <p class="px-2 text-xs font-bold uppercase tracking-wider text-slate-400 mb-3">
+<div class="mt-8 mb-8">
+        <p class="px-2 text-xs font-bold uppercase tracking-wider text-slate-400 mb-3">
         Website Management
     </p>
 
@@ -109,8 +109,10 @@ class="flex items-center gap-4 px-5 py-3 rounded-2xl transition
             </nav>
         </div>
 
-        <form method="POST" action="{{ route('logout') }}">
-            @csrf
+        <form method="POST"
+      action="{{ route('logout') }}"
+      class="mt-auto pt-6 pb-4">            
+      @csrf
             <button class="w-full flex items-center justify-center gap-2 bg-red-500 text-white px-5 py-3 rounded-2xl font-bold hover:bg-red-600 transition">
                 <i data-lucide="log-out" class="w-5"></i>
                 Logout

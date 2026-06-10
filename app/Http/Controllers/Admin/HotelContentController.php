@@ -26,7 +26,7 @@ class HotelContentController extends Controller
             'section_key' => 'required|string|max:255|unique:hotel_contents,section_key',
             'title' => 'nullable|string|max:255',
             'content' => 'nullable|string',
-            'image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+            'image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:10240',
             'is_active' => 'nullable|boolean',
         ]);
 
@@ -59,7 +59,7 @@ class HotelContentController extends Controller
             'section_key' => 'required|string|max:255|unique:hotel_contents,section_key,' . $hotelContent->id,
             'title' => 'nullable|string|max:255',
             'content' => 'nullable|string',
-            'image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+            'image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:10240',
             'is_active' => 'nullable|boolean',
         ]);
 

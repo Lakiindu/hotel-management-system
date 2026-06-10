@@ -38,6 +38,27 @@
 
 <body class="bg-slate-50 text-slate-800">
 
+@php
+    $hero = $contents['hero'] ?? null;
+    $about = $contents['about'] ?? null;
+    $mission = $contents['mission'] ?? null;
+    $vision = $contents['vision'] ?? null;
+    $contact = $contents['contact'] ?? null;
+    $footer = $contents['footer'] ?? null;
+
+    $heroImage = $hero && $hero->image
+        ? asset('storage/' . $hero->image)
+        : 'https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=1800&q=80';
+
+    $aboutImage = $about && $about->image
+        ? asset('storage/' . $about->image)
+        : 'https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?auto=format&fit=crop&w=1000&q=80';
+
+    $contactParts = $contact && $contact->content
+        ? array_map('trim', explode('|', $contact->content))
+        : ['Malabe, Sri Lanka', '+94 77 651 4545', 'info@royalstay.com'];
+@endphp
+
 <header class="fixed top-0 left-0 w-full z-50 glass-nav border-b border-white/10">
     <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
 
@@ -94,9 +115,9 @@
 <section id="home" class="relative min-h-screen overflow-hidden flex items-center">
 
     <div class="absolute inset-0 hero-slide"
-         style="background-image:
-         linear-gradient(rgba(2,6,23,0.72), rgba(2,6,23,0.82)),
-         url('https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=1800&q=80');">
+     style="background-image:
+     linear-gradient(rgba(2,6,23,0.72), rgba(2,6,23,0.82)),
+     url('{{ $heroImage }}');">
     </div>
 
     <div class="absolute inset-0 bg-gradient-to-r from-slate-950/70 via-slate-950/30 to-transparent"></div>
@@ -109,11 +130,11 @@
             </p>
 
             <h1 class="text-5xl md:text-7xl font-extrabold text-white leading-tight mb-6">
-                Enjoy Your Dream Stay With Modern Comfort
+                {{ $hero->title ?? 'Enjoy Your Dream Stay With Modern Comfort' }}
             </h1>
 
             <p class="text-slate-200 text-lg leading-8 mb-8">
-                Book premium rooms, enjoy luxury facilities, and manage your stays easily through RoyalStay.
+                {{ $hero->content ?? 'Book premium rooms, enjoy luxury facilities, and manage your stays easily through RoyalStay.' }}
             </p>
 
             <div class="flex flex-wrap gap-4 mb-10">
@@ -153,7 +174,7 @@
     <div class="max-w-7xl mx-auto px-6 grid lg:grid-cols-2 gap-14 items-center">
 
         <div data-aos="fade-right">
-            <img src="https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?auto=format&fit=crop&w=1000&q=80"
+            <img src="{{ $aboutImage }}"
                  class="rounded-[2rem] shadow-2xl w-full h-[430px] object-cover"
                  alt="Hotel Lobby">
         </div>
@@ -164,12 +185,11 @@
             </p>
 
             <h2 class="text-4xl lg:text-5xl font-extrabold text-slate-900 mb-6">
-                A Modern Hotel Designed For Comfort
-            </h2>
+            {{ $about->title ?? 'A Modern Hotel Designed For Comfort' }}            </h2>
 
             <p class="text-slate-600 leading-8 mb-6">
-                RoyalStay is a modern hotel platform designed to provide easy room booking,
-                comfortable stays, secure payments, and excellent services.
+                {{ $about->content ?? 'RoyalStay is a modern hotel platform designed to provide easy room booking, 
+                comfortable stays, secure payments, and excellent services.' }}
             </p>
 
             <div class="flex flex-wrap gap-3 mb-6">
@@ -186,17 +206,15 @@
 
             <div class="grid md:grid-cols-2 gap-4">
                 <div class="bg-slate-100 p-6 rounded-3xl hover:shadow-xl transition">
-                    <h3 class="font-extrabold text-slate-900 mb-2">Mission</h3>
+                    <h3 class="font-extrabold text-slate-900 mb-2">{{ $mission->title ?? 'Mission' }}</h3>
                     <p class="text-sm text-slate-600">
-                        Provide excellent hotel service with simple digital access.
-                    </p>
+                    {{ $mission->content ?? 'Provide excellent hotel service with simple digital access.' }}                    </p>
                 </div>
 
                 <div class="bg-slate-100 p-6 rounded-3xl hover:shadow-xl transition">
-                    <h3 class="font-extrabold text-slate-900 mb-2">Vision</h3>
+                    <h3 class="font-extrabold text-slate-900 mb-2">{{ $vision->title ?? 'Vision' }}</h3>
                     <p class="text-sm text-slate-600">
-                        Become a trusted modern hotel booking platform.
-                    </p>
+                    {{ $vision->content ?? 'Become a trusted modern hotel booking platform.' }}                    </p>
                 </div>
             </div>
         </div>
@@ -425,11 +443,11 @@
 
             <div class="space-y-6 text-slate-300">
 
-                <p><i class="fa-solid fa-location-dot text-amber-400 mr-3"></i>Malabe, Sri Lanka</p>
+                <p><i class="fa-solid fa-location-dot text-amber-400 mr-3"></i>{{ $contactParts[0] ?? 'Malabe, Sri Lanka' }}</p>
 
-                <p><i class="fa-solid fa-phone text-amber-400 mr-3"></i>+94 77 651 4545</p>
+                <p><i class="fa-solid fa-phone text-amber-400 mr-3"></i>{{ $contactParts[1] ?? '+94 77 651 4545' }}</p>
 
-                <p><i class="fa-solid fa-envelope text-amber-400 mr-3"></i>info@royalstay.com</p>
+                <p><i class="fa-solid fa-envelope text-amber-400 mr-3"></i>{{ $contactParts[2] ?? 'info@royalstay.com' }}</p>
 
             </div>
 
@@ -504,8 +522,7 @@
             </h3>
 
             <p class="text-slate-400">
-                Luxury hotel experience with premium facilities and secure online booking.
-            </p>
+            {{ $footer->content ?? 'Luxury hotel experience with premium facilities and secure online booking.' }}            </p>
         </div>
 
         <div>
@@ -523,9 +540,9 @@
             <h4 class="text-white font-bold mb-4">Contact</h4>
 
             <div class="space-y-2 text-slate-400">
-                <p>Malabe, Sri Lanka</p>
-                <p>+94 77 651 4545</p>
-                <p>info@royalstay.com</p>
+            <p>{{ $contactParts[0] ?? 'Malabe, Sri Lanka' }}</p>
+            <p>{{ $contactParts[1] ?? '+94 77 651 4545' }}</p>
+            <p>{{ $contactParts[2] ?? 'info@royalstay.com' }}</p>
             </div>
         </div>
 

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Room;
 use App\Models\Service;
 use App\Models\Gallery;
+use App\Models\HotelContent;
 use Illuminate\Http\Request;
 
 class FrontendController extends Controller
@@ -18,6 +19,7 @@ class FrontendController extends Controller
 
         $services = Service::where('is_active', true)
             ->latest()
+            ->take(6)
             ->get();
 
         $galleries = Gallery::where('is_active', true)
@@ -25,10 +27,15 @@ class FrontendController extends Controller
             ->take(8)
             ->get();
 
+        $contents = HotelContent::where('is_active', true)
+            ->get()
+            ->keyBy('section_key');
+
         return view('frontend.home', compact(
             'rooms',
             'services',
-            'galleries'
+            'galleries',
+            'contents'
         ));
     }
 
