@@ -14,7 +14,6 @@ class FrontendController extends Controller
     {
         $rooms = Room::where('status', 'available')
             ->latest()
-            ->take(3)
             ->get();
 
         $services = Service::where('is_active', true)
@@ -47,21 +46,49 @@ class FrontendController extends Controller
                     $q->where('room_number', 'like', "%{$request->search}%")
                       ->orWhere('room_type', 'like', "%{$request->search}%");
                 });
-            })
-            ->when($request->type, function ($query) use ($request) {
-                $query->where('room_type', $request->type);
-            })
-            ->when($request->status, function ($query) use ($request) {
-                $query->where('status', $request->status);
-            })
-            ->latest()
-            ->paginate(6);
+
+                })
+                ->when($request->type, function ($query) use ($request) {
+                    $query->where('room_type', $request->type);
+                })
+
+                ->when($request->status, function ($query) use ($request) {
+                    $query->where('status', $request->status);
+                })
+
+                ->when($request->sort == 'price_low', function ($query) {
+                $query->orderBy('price_per_night', 'asc');
+                })
+
+                ->when($request->sort == 'price_high', function ($query) {
+                    $query->orderBy('price_per_night', 'desc');
+                })
+
+                ->when($request->sort == 'type', function ($query) {
+                    $query->orderBy('room_type', 'asc');
+                })
+
+                ->when(!$request->sort || $request->sort == 'newest', function ($query) {
+                    $query->latest();
+                })
+
+            ->paginate(9)
+            ->withQueryString();
 
         $roomTypes = Room::select('room_type')
             ->distinct()
+            ->orderBy('room_type')
             ->pluck('room_type');
 
-        return view('frontend.rooms', compact('rooms', 'roomTypes'));
+        $totalRooms = Room::count();
+        $availableRooms = Room::where('status', 'available')->count();
+
+        return view('frontend.rooms', compact(
+            'rooms',
+            'roomTypes',
+            'totalRooms',
+            'availableRooms'
+        ));
     }
 
     public function roomDetails(Room $room)
@@ -80,11 +107,29 @@ class FrontendController extends Controller
             })
             ->when($request->type, function ($query) use ($request) {
                 $query->where('room_type', $request->type);
+
             })
+
             ->when($request->status, function ($query) use ($request) {
                 $query->where('status', $request->status);
             })
-            ->latest()
+
+            ->when($request->sort == 'price_low', function ($query) {
+                $query->orderBy('price_per_night', 'asc');
+            })
+
+            ->when($request->sort == 'price_high', function ($query) {
+                $query->orderBy('price_per_night', 'desc');
+            })
+
+            ->when($request->sort == 'type', function ($query) {
+                $query->orderBy('room_type', 'asc');
+            })
+
+            ->when(!$request->sort || $request->sort == 'newest', function ($query) {
+                $query->latest();
+            })
+            
             ->get();
 
         return response()->json([

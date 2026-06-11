@@ -3,7 +3,7 @@
 
     <div class="mb-8">
         <p class="text-amber-500 font-bold uppercase tracking-widest mb-2">
-            Create Account
+            Create An Account
         </p>
 
         <h1 class="text-3xl font-extrabold text-slate-950">

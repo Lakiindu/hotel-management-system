@@ -16,14 +16,17 @@ class RoomController extends Controller
 
         $rooms = Room::query()
             ->when($search, function ($query) use ($search) {
-                $query->where('room_number', 'like', "%{$search}%")
-                    ->orWhere('room_type', 'like', "%{$search}%");
+                $query->where(function ($q) use ($search) {
+                    $q->where('room_number', 'like', "%{$search}%")
+                        ->orWhere('room_type', 'like', "%{$search}%");
+                });
             })
             ->when($status, function ($query) use ($status) {
                 $query->where('status', $status);
             })
             ->latest()
-            ->paginate(6);
+            ->paginate(9)
+            ->withQueryString();
 
         return view('admin.rooms.index', compact('rooms', 'search', 'status'));
     }
@@ -67,7 +70,7 @@ class RoomController extends Controller
             'description' => 'nullable|string',
             'facilities' => 'nullable|string',
             'status' => 'required|in:available,occupied,maintenance',
-            'image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+            'image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:10240',
         ]);
 
         $imagePath = null;
@@ -108,7 +111,7 @@ class RoomController extends Controller
             'description' => 'nullable|string',
             'facilities' => 'nullable|string',
             'status' => 'required|in:available,occupied,maintenance',
-            'image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+            'image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:10240',
         ]);
 
         $imagePath = $room->image;

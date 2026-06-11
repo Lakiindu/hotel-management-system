@@ -23,6 +23,15 @@
             background-position: center;
             animation: heroZoom 12s ease-in-out infinite alternate;
         }
+        .hero-bg {
+            background-size: cover;
+            background-position: center;
+            transition: opacity 1s ease-in-out;
+        }
+
+        .stat-number {
+            transition: all 0.3s ease;
+        }
 
         @keyframes heroZoom {
             from { transform: scale(1); }
@@ -63,7 +72,7 @@
     <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
 
         <a href="{{ route('home') }}" class="text-2xl font-extrabold text-white">
-            RoyalStay<span class="text-amber-400">.</span>
+        {{ $footer->title ?? 'RoyalStay.' }}
         </a>
 
         <nav class="hidden lg:flex items-center gap-8 text-sm font-bold text-slate-200">
@@ -114,11 +123,18 @@
 
 <section id="home" class="relative min-h-screen overflow-hidden flex items-center">
 
-    <div class="absolute inset-0 hero-slide"
+    <div id="heroSlider"
+     class="absolute inset-0 hero-slide hero-bg"
+     data-images="{{ json_encode([
+        $heroImage,
+        'https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=1800&q=80',
+        'https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?auto=format&fit=crop&w=1800&q=80',
+        'https://images.unsplash.com/photo-1578683010236-d716f9a3f461?auto=format&fit=crop&w=1800&q=80'
+     ]) }}"
      style="background-image:
      linear-gradient(rgba(2,6,23,0.72), rgba(2,6,23,0.82)),
      url('{{ $heroImage }}');">
-    </div>
+</div>
 
     <div class="absolute inset-0 bg-gradient-to-r from-slate-950/70 via-slate-950/30 to-transparent"></div>
 
@@ -151,17 +167,17 @@
 
             <div class="grid grid-cols-3 gap-4 max-w-2xl">
                 <div class="bg-white/10 backdrop-blur p-4 rounded-2xl text-white">
-                    <h3 class="text-2xl font-extrabold text-amber-400">50+</h3>
-                    <p class="text-sm text-slate-200">Rooms</p>
+            <h3 class="stat-number text-2xl font-extrabold text-amber-400" data-target="50" data-suffix="+">0</h3>                    
+            <p class="text-sm text-slate-200">Rooms</p>
                 </div>
 
                 <div class="bg-white/10 backdrop-blur p-4 rounded-2xl text-white">
-                    <h3 class="text-2xl font-extrabold text-amber-400">24/7</h3>
-                    <p class="text-sm text-slate-200">Service</p>
+            <h3 class="stat-number text-2xl font-extrabold text-amber-400" data-target="24" data-suffix="/7">0</h3>                    
+            <p class="text-sm text-slate-200">Service</p>
                 </div>
 
                 <div class="bg-white/10 backdrop-blur p-4 rounded-2xl text-white">
-                    <h3 class="text-2xl font-extrabold text-amber-400">100%</h3>
+                    <h3 class="stat-number text-2xl font-extrabold text-amber-400" data-target="100" data-suffix="%">0</h3>
                     <p class="text-sm text-slate-200">Secure</p>
                 </div>
             </div>
@@ -175,8 +191,8 @@
 
         <div data-aos="fade-right">
             <img src="{{ $aboutImage }}"
-                 class="rounded-[2rem] shadow-2xl w-full h-[430px] object-cover"
-                 alt="Hotel Lobby">
+            class="rounded-[2rem] shadow-2xl w-full h-[430px] object-cover hover:scale-[1.02] transition duration-500"
+            alt="Hotel">
         </div>
 
         <div data-aos="fade-left">
@@ -185,7 +201,8 @@
             </p>
 
             <h2 class="text-4xl lg:text-5xl font-extrabold text-slate-900 mb-6">
-            {{ $about->title ?? 'A Modern Hotel Designed For Comfort' }}            </h2>
+            {{ $about->title ?? 'A Modern Hotel Designed For Comfort' }}            
+        </h2>
 
             <p class="text-slate-600 leading-8 mb-6">
                 {{ $about->content ?? 'RoyalStay is a modern hotel platform designed to provide easy room booking, 
@@ -208,19 +225,22 @@
                 <div class="bg-slate-100 p-6 rounded-3xl hover:shadow-xl transition">
                     <h3 class="font-extrabold text-slate-900 mb-2">{{ $mission->title ?? 'Mission' }}</h3>
                     <p class="text-sm text-slate-600">
-                    {{ $mission->content ?? 'Provide excellent hotel service with simple digital access.' }}                    </p>
+                    {{ $mission->content ?? 'Provide excellent hotel service with simple digital access.' }}                    
+                </p>
                 </div>
 
                 <div class="bg-slate-100 p-6 rounded-3xl hover:shadow-xl transition">
                     <h3 class="font-extrabold text-slate-900 mb-2">{{ $vision->title ?? 'Vision' }}</h3>
                     <p class="text-sm text-slate-600">
-                    {{ $vision->content ?? 'Become a trusted modern hotel booking platform.' }}                    </p>
+                    {{ $vision->content ?? 'Become a trusted modern hotel booking platform.' }}                    
+                </p>
                 </div>
             </div>
         </div>
 
     </div>
 </section>
+
 <section id="rooms" class="py-24 bg-slate-50">
     <div class="max-w-7xl mx-auto px-6">
 
@@ -234,69 +254,99 @@
             </h2>
         </div>
 
-        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div class="relative">
 
-            @forelse($rooms as $room)
+            <div class="overflow-hidden">
+                <div id="roomSlider"
+                     class="flex transition-transform duration-500 ease-out">
 
-            <div
-                data-aos="fade-up"
-                class="bg-white rounded-[2rem] overflow-hidden shadow-lg hover:-translate-y-2 hover:shadow-2xl transition duration-500">
+                    @forelse($rooms as $room)
 
-                <img src="{{ $room->image ? asset('storage/'.$room->image) : 'https://images.unsplash.com/photo-1566665797739-1674de7a421a?auto=format&fit=crop&w=900&q=80' }}"
-                class="h-64 w-full object-cover"
-                alt="{{ $room->room_type }}"
-                loading="lazy"
-                decoding="async">
+                    <div class="shrink-0 basis-full md:basis-1/2 lg:basis-1/3 px-4">                            
+                    <div data-aos="fade-up"
+                            class="bg-white rounded-[2rem] overflow-hidden shadow-lg hover:-translate-y-2 hover:shadow-2xl transition duration-500">
 
-                <div class="p-7">
+                                <div class="overflow-hidden">
+                                    <img src="{{ $room->image ? asset('storage/'.$room->image) : 'https://images.unsplash.com/photo-1566665797739-1674de7a421a?auto=format&fit=crop&w=900&q=80' }}"
+                                         class="h-52 w-full object-cover hover:scale-110 transition duration-500"                                        
+                                          alt="{{ $room->room_type }}"
+                                         loading="lazy"
+                                         decoding="async">
+                                </div>
 
-                    <div class="flex justify-between items-center mb-4">
-                        <h3 class="text-3xl font-extrabold text-slate-900">
-                            {{ $room->room_type }}
-                        </h3>
+                                <div class="p-5">
+                                    <div class="flex justify-between items-center mb-4">
 
-                        <span class="px-4 py-2 rounded-full text-sm font-bold
-                                {{ $room->status == 'available' ? 'bg-green-100 text-green-700' : '' }}
-                                {{ $room->status == 'occupied' ? 'bg-red-100 text-red-700' : '' }}
-                                {{ $room->status == 'maintenance' ? 'bg-yellow-100 text-yellow-700' : '' }}">
-                                {{ ucfirst($room->status) }}
-                        </span>
-                    </div>
+        <h3 class="text-2xl font-black text-slate-900">
+            {{ $room->room_type }}
+        </h3>
 
-                    <p class="text-slate-600 mb-5">
-                        {{ $room->description ?? 'Luxury room with premium comfort and facilities.' }}
-                    </p>
-
-                    <div class="flex flex-wrap gap-2 mb-6">
-                        <span class="bg-slate-100 px-3 py-2 rounded-full text-sm">WiFi</span>
-                        <span class="bg-slate-100 px-3 py-2 rounded-full text-sm">TV</span>
-                        <span class="bg-slate-100 px-3 py-2 rounded-full text-sm">Air Conditioning</span>
-                    </div>
-
-                    <div class="flex justify-between items-center">
-                        <div>
-                            <h4 class="text-3xl font-extrabold text-amber-500">
-                                Rs. {{ number_format($room->price_per_night, 2) }}
-                            </h4>
-                            <span class="text-slate-500">/ night</span>
-                        </div>
-
-                        <a href="{{ route('rooms.details', $room->id) }}"
-                           class="bg-slate-950 text-white px-6 py-3 rounded-full font-bold hover:bg-amber-500 hover:text-black transition">
-                            View
-                        </a>
-                    </div>
+        <span class="px-4 py-2 rounded-full text-sm font-bold
+            {{ $room->status == 'available' ? 'bg-green-100 text-green-700' : '' }}
+            {{ $room->status == 'occupied' ? 'bg-red-100 text-red-700' : '' }}
+            {{ $room->status == 'maintenance' ? 'bg-yellow-100 text-yellow-700' : '' }}">
+            {{ ucfirst($room->status) }}
+        </span>
 
                 </div>
 
+                                    <p class="text-slate-600 mb-5">
+                                        {{ $room->description ?? 'Luxury room with premium comfort and facilities.' }}
+                                    </p>
+
+                                    <div class="flex flex-wrap gap-2 mb-6">
+                                        <span class="bg-slate-100 px-3 py-2 rounded-full text-sm">WiFi</span>
+                                        <span class="bg-slate-100 px-3 py-2 rounded-full text-sm">TV</span>
+                                        <span class="bg-slate-100 px-3 py-2 rounded-full text-sm">Air Conditioning</span>
+                                    </div>
+
+                                    <div class="flex justify-between items-center">
+                                        <div>
+                                            <h4 class="text-2xl font-extrabold text-amber-500 hover:text-amber-600 transition">
+                                                Rs. {{ number_format($room->price_per_night, 2) }}
+                                            </h4>
+                                            <span class="text-slate-500">/ night</span>
+                                        </div>
+
+                                        <a href="{{ route('rooms.details', $room->id) }}"
+                                           class="bg-slate-950 text-white px-6 py-3 rounded-full font-bold hover:bg-amber-500 hover:text-black hover:scale-105 transition">
+                                            View
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    @empty
+
+                        <p class="w-full text-center text-slate-500">
+                            No featured rooms available.
+                        </p>
+
+                    @endforelse
+
+                </div>
             </div>
 
-            @empty
-            <p class="col-span-3 text-center text-slate-500">
-            No featured rooms available.
-            </p>
-            @endforelse
+            <button id="roomPrev"
+                    type="button"
+                    class="absolute top-1/2 -left-4 -translate-y-1/2 bg-slate-950 text-white w-12 h-12 rounded-full shadow-lg hover:bg-amber-400 hover:text-slate-950 transition">
+                <i class="fa-solid fa-chevron-left"></i>
+            </button>
 
+            <button id="roomNext"
+                    type="button"
+                    class="absolute top-1/2 -right-4 -translate-y-1/2 bg-slate-950 text-white w-12 h-12 rounded-full shadow-lg hover:bg-amber-400 hover:text-slate-950 transition">
+                <i class="fa-solid fa-chevron-right"></i>
+            </button>
+
+        </div>
+
+        <div class="text-center mt-12">
+            <a href="{{ route('rooms') }}"
+               class="inline-block bg-amber-400 text-slate-950 px-8 py-4 rounded-full font-extrabold hover:bg-amber-300 transition">
+                View All Rooms
+            </a>
         </div>
 
     </div>
@@ -438,7 +488,7 @@
             </p>
 
             <h2 class="text-5xl font-extrabold text-white mb-8">
-                Get In Touch
+                {{ $contact->title ?? 'Get In Touch' }}
             </h2>
 
             <div class="space-y-6 text-slate-300">
@@ -453,7 +503,7 @@
 
             <div class="mt-10 bg-white/10 p-6 rounded-3xl">
                 <h4 class="text-white font-bold mb-3">Opening Hours</h4>
-                <p class="text-slate-300">Mon - Sun : 24 Hours</p>
+                <p class="text-slate-300">{{ $contactParts[3] ?? 'Mon - Sun : 24 Hours' }}</p>
             </div>
 
         </div>
@@ -518,11 +568,12 @@
 
         <div>
             <h3 class="text-3xl font-extrabold text-white mb-4">
-                RoyalStay<span class="text-amber-400">.</span>
+                {{ $footer->title ?? 'RoyalStay.' }}
             </h3>
 
             <p class="text-slate-400">
-            {{ $footer->content ?? 'Luxury hotel experience with premium facilities and secure online booking.' }}            </p>
+            {{ $footer->content ?? 'Luxury hotel experience with premium facilities and secure online booking.' }}           
+         </p>
         </div>
 
         <div>
@@ -568,9 +619,9 @@
 
 <script>
 AOS.init({
-    duration: 500,
+    duration: 700,
     once: true,
-    offset: 50,
+    offset: 80,
     easing: 'ease-out'
 });
 
@@ -580,6 +631,122 @@ const menu = document.getElementById('mobileMenu');
 btn?.addEventListener('click', () => {
     menu?.classList.toggle('hidden');
 });
+
+document.querySelectorAll('.mobile-link').forEach(link => {
+    link.addEventListener('click', () => {
+        menu?.classList.add('hidden');
+    });
+});
+
+// Hero Slider
+const heroSlider = document.getElementById('heroSlider');
+
+if (heroSlider) {
+    const heroImages = JSON.parse(heroSlider.dataset.images);
+    let currentHero = 0;
+
+    setInterval(() => {
+        currentHero = (currentHero + 1) % heroImages.length;
+
+        heroSlider.style.opacity = 0;
+
+        setTimeout(() => {
+            heroSlider.style.backgroundImage =
+                `linear-gradient(rgba(2,6,23,0.72), rgba(2,6,23,0.82)), url('${heroImages[currentHero]}')`;
+
+            heroSlider.style.opacity = 1;
+        }, 600);
+    }, 5000);
+}
+
+// Animated Stats Counter
+const statNumbers = document.querySelectorAll('.stat-number');
+let statsStarted = false;
+
+function animateStats() {
+    if (statsStarted) return;
+
+    const statsSection = statNumbers[0]?.closest('.grid');
+
+    if (!statsSection) return;
+
+    const position = statsSection.getBoundingClientRect().top;
+
+    if (position < window.innerHeight - 100) {
+        statsStarted = true;
+
+        statNumbers.forEach(stat => {
+            const target = Number(stat.dataset.target);
+            const suffix = stat.dataset.suffix || '';
+            let current = 0;
+            const increment = Math.ceil(target / 50);
+
+            const counter = setInterval(() => {
+                current += increment;
+
+                if (current >= target) {
+                    current = target;
+                    clearInterval(counter);
+                }
+
+                stat.textContent = current + suffix;
+            }, 30);
+        });
+    }
+}
+
+window.addEventListener('scroll', animateStats);
+window.addEventListener('load', animateStats);
+
+// Room Slider
+const roomSlider = document.getElementById('roomSlider');
+const roomPrev = document.getElementById('roomPrev');
+const roomNext = document.getElementById('roomNext');
+
+let roomIndex = 0;
+
+function getVisibleRooms() {
+    if (window.innerWidth >= 1024) return 3;
+    if (window.innerWidth >= 768) return 2;
+    return 1;
+}
+
+function updateRoomSlider() {
+    if (!roomSlider) return;
+
+    const totalRooms = roomSlider.children.length;
+    const visibleRooms = getVisibleRooms();
+    const maxIndex = Math.max(totalRooms - visibleRooms, 0);
+
+    if (roomIndex > maxIndex) {
+        roomIndex = maxIndex;
+    }
+
+    const slideWidth = 100 / visibleRooms;
+    roomSlider.style.transform = `translateX(-${roomIndex * slideWidth}%)`;
+}
+
+roomNext?.addEventListener('click', () => {
+    const totalRooms = roomSlider.children.length;
+    const visibleRooms = getVisibleRooms();
+    const maxIndex = Math.max(totalRooms - visibleRooms, 0);
+
+    roomIndex = roomIndex >= maxIndex ? 0 : roomIndex + 1;
+    updateRoomSlider();
+});
+
+roomPrev?.addEventListener('click', () => {
+    const totalRooms = roomSlider.children.length;
+    const visibleRooms = getVisibleRooms();
+    const maxIndex = Math.max(totalRooms - visibleRooms, 0);
+
+    roomIndex = roomIndex <= 0 ? maxIndex : roomIndex - 1;
+    updateRoomSlider();
+});
+
+window.addEventListener('resize', updateRoomSlider);
+window.addEventListener('load', updateRoomSlider);
+
 </script>
 
 </body>
