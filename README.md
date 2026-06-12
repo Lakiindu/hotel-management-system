@@ -1,59 +1,189 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+<div align="center">
+# 🏨 Hotel Management System
+Modern Hotel Management System built with Laravel, MySQL, Tailwind CSS and AJAX.
+![Laravel](https://img.shields.io/badge/Laravel-12-red)
+![PHP](https://img.shields.io/badge/PHP-8+-blue)
+![MySQL](https://img.shields.io/badge/MySQL-Database-orange)
+![License](https://img.shields.io/badge/License-Educational-green)
+</div>
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+🏨 Hotel Management System
+A modern Hotel Management System developed using Laravel, MySQL, Tailwind CSS, AJAX, and JavaScript. The system provides a complete solution for managing hotel operations, room bookings, customer interactions, payments, and website content through dedicated Admin and Customer panels.
+________________________________________
+📌 Project Overview
+The Hotel Management System is designed to simplify hotel operations by providing an easy-to-use platform for administrators and customers.
+Key Objectives
+•	Manage hotel rooms and availability
+•	Handle customer bookings efficiently
+•	Process and track payments
+•	Manage customer reviews and feedback
+•	Manage hotel website content dynamically
+•	Provide a professional customer booking experience
+________________________________________
+🚀 Technologies Used
+Backend
+•	Laravel 12
+•	PHP 8+
+•	MySQL
+Frontend
+•	Blade Templates
+•	Tailwind CSS
+•	JavaScript
+•	AJAX
+Development Tools
+•	Visual Studio Code
+•	Git & GitHub
+•	Composer
+•	WAMP Server
+________________________________________
+👥 User Roles
+Admin
+Administrators can:
+•	Manage rooms
+•	Manage bookings
+•	Manage customers
+•	Manage payments
+•	Manage reviews
+•	Manage contact messages
+•	Generate reports
+•	Manage homepage content
+•	Manage hotel services
+•	Manage gallery images
+Customer
+Customers can:
+•	Register and login
+•	Browse available rooms
+•	View room details
+•	Make room bookings
+•	Manage bookings
+•	Make payments
+•	Submit reviews
+•	Manage profile information
+•	Download invoices
+________________________________________
+🌐 Public Website Features
+Home Page
+•	Hero section
+•	About section
+•	Featured rooms
+•	Hotel services
+•	Gallery showcase
+•	Contact section
+•	Dynamic content management
+Rooms
+•	View available rooms
+•	Room details
+•	Pricing information
+•	Room images
+Services
+•	Hotel facilities showcase
+•	Dynamic service management
+Gallery
+•	Hotel image gallery
+•	Dynamic gallery management
+Contact
+•	Customer contact form
+•	Message management for administrators
+________________________________________
+⚙️ Admin Panel Features
+Room Management
+•	Add rooms
+•	Edit rooms
+•	Delete rooms
+•	Manage availability
+Booking Management
+•	View bookings
+•	Approve bookings
+•	Cancel bookings
+•	Update booking status
+Customer Management
+•	View customer information
+•	Manage customer accounts
+Payment Management
+•	Track payments
+•	Confirm payments
+•	Generate invoices
+Website Content Management
+Home Content Management
+•	Hero section
+•	About section
+•	Mission section
+•	Vision section
+•	Contact information
+•	Footer content
+Service Management
+•	Add services
+•	Edit services
+•	Upload service images
+Gallery Management
+•	Upload gallery images
+•	Categorize images
+•	Manage gallery visibility
+________________________________________
+📊 System Modules
+•	Authentication & Authorization
+•	Room Management
+•	Booking Management
+•	Customer Management
+•	Payment Management
+•	Review Management
+•	Contact Management
+•	Notification System
+•	Reports Module
+•	Home Content Management
+•	Service Management
+•	Gallery Management
+________________________________________
+🗄️ Database
+The system uses MySQL and includes tables such as:
+•	users
+•	rooms
+•	bookings
+•	payments
+•	reviews
+•	contacts
+•	notifications
+•	services
+•	galleries
+•	hotel_contents
+________________________________________
+🔧 Installation
+Clone Repository
+git clone https://github.com/Lakindu/hotel-management-system.git
 
-## About Laravel
+Navigate to Project
+cd hotel-management-system
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+Install Dependencies
+composer install
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+Create Environment File
+cp .env.example .env
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+Generate Application Key
+php artisan key:generate
 
-## Learning Laravel
+Configure Database
+Update .env:
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+DB_DATABASE=hotel_management
+DB_USERNAME=root
+DB_PASSWORD=
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+Run Migrations
+php artisan migrate
 
-## Laravel Sponsors
+Create Storage Link
+php artisan storage:link
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+Start Server
+php artisan serve
 
-### Premium Partners
+________________________________________
+👨💻 Developer
+Lakindu
+Hotel Management System developed as a full-stack web application project using Laravel and MySQL.
+________________________________________
+📄 License
+This project is developed for educational and portfolio purposes.
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
-
-## Contributing
-
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
-
-## Code of Conduct
-
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
-
-## Security Vulnerabilities
-
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
-
-## License
-
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
