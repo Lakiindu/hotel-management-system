@@ -313,7 +313,7 @@ storage/
 
 # 👨‍💻 Developer
 
-**Lakindu**
+**Lakindu Ransika**
 
 Hotel Management System developed as a Full Stack Laravel Web Application using Laravel, MySQL, Tailwind CSS, AJAX, and JavaScript.
 
