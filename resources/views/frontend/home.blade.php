@@ -726,7 +726,6 @@
             </p>
 
             <div class="flex gap-5 text-xl">
-
                 <a href="https://www.facebook.com/share/1DqCn5Ubdz/"
                     class="text-slate-400 hover:text-amber-400 hover:scale-125 transition duration-300">
                     <i class="fab fa-facebook"></i>
