@@ -4,6 +4,7 @@
 
 @section('content')
 
+{{-- Display Validation Errors --}}
 @if($errors->any())
     <div class="bg-red-100 text-red-700 p-4 rounded-2xl mb-6">
         <ul class="list-disc ml-5">
@@ -14,19 +15,24 @@
     </div>
 @endif
 
+{{-- Main Service Form Container --}}
 <div class="bg-white p-8 rounded-3xl shadow">
 
+    {{-- Page Heading --}}
     <h2 class="text-2xl font-bold mb-6">
         Add Service
     </h2>
 
+    {{-- Form for creating a new service --}}
     <form method="POST"
           action="{{ route('admin.services.store') }}"
           enctype="multipart/form-data">
         @csrf
 
+        {{-- Title and Icon Fields --}}
         <div class="grid md:grid-cols-2 gap-6">
 
+        {{-- Service Title --}}
             <div>
                 <label class="font-semibold">Title</label>
 
@@ -37,6 +43,7 @@
                        required>
             </div>
 
+        {{-- Service Icon --}}
             <div>
                 <label class="font-semibold">Icon</label>
 
@@ -47,6 +54,7 @@
                        class="w-full border p-3 rounded-xl mt-2">
             </div>
 
+        {{-- Service Description --}}
         </div>
 
         <div class="mt-5">
@@ -57,6 +65,7 @@
                       class="w-full border p-3 rounded-xl mt-2">{{ old('description') }}</textarea>
         </div>
 
+        {{-- Service Image Upload --}}
         <div class="mt-5">
             <label class="font-semibold">Image</label>
 
@@ -65,6 +74,7 @@
                    class="w-full border p-3 rounded-xl mt-2">
         </div>
 
+        {{-- Service Status --}}
         <div class="mt-5">
             <label class="flex items-center gap-3">
                 <input type="checkbox"
@@ -76,13 +86,16 @@
             </label>
         </div>
 
+        {{-- Form Action Buttons --}}
         <div class="mt-6 flex gap-4">
 
+        {{-- Save Service --}}
             <button type="submit"
                     class="bg-blue-600 text-white px-6 py-3 rounded-xl font-bold hover:bg-blue-700">
                 Save Service
             </button>
 
+            {{-- Return to Service List --}}
             <a href="{{ route('admin.services.index') }}"
                class="bg-gray-500 text-white px-6 py-3 rounded-xl font-bold hover:bg-gray-600">
                 Cancel

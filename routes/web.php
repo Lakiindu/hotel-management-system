@@ -1,10 +1,12 @@
 <?php
 
+// Web Routes
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\FrontendController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\ContactController;
 
+// Admin Controllers
 use App\Http\Controllers\Admin\RoomController;
 use App\Http\Controllers\Admin\CustomerController;
 use App\Http\Controllers\Admin\BookingController as AdminBookingController;
@@ -16,23 +18,29 @@ use App\Http\Controllers\Admin\ServiceController;
 use App\Http\Controllers\Admin\GalleryController;
 use App\Http\Controllers\Admin\HotelContentController;
 
+// Customer Controllers
 use App\Http\Controllers\Customer\BookingController as CustomerBookingController;
 use App\Http\Controllers\Customer\PaymentController as CustomerPaymentController;
 use App\Http\Controllers\Customer\ReviewController as CustomerReviewController;
 use App\Http\Controllers\Customer\ProfileController as CustomerProfileController;
 
+// Authentication Controllers
 use Illuminate\Support\Facades\Route;
 
 // Public Frontend Routes
+// Home and Rooms pages
 Route::get('/', [FrontendController::class, 'home'])->name('home');
 
+// Rooms listing and details pages
 Route::get('/rooms', [FrontendController::class, 'rooms'])
     ->name('rooms');
 
+// Room details page with dynamic room ID
 Route::get('/rooms/{room}', [FrontendController::class, 'roomDetails'])
     ->name('rooms.details');
 
 // Contact Form Route
+// Handles contact form submissions from the frontend
 Route::post('/contact', [ContactController::class, 'store'])
     ->name('contact.store');
 
@@ -48,9 +56,11 @@ Route::get('/dashboard', [DashboardController::class, 'redirect'])
 // Notification Routes
 Route::middleware(['auth'])->group(function () {
 
+// Mark individual notification as read
     Route::patch('/notifications/{notification}/read', [NotificationController::class, 'markAsRead'])
         ->name('notifications.read');
 
+// Mark all notifications as read
     Route::patch('/notifications/read-all', [NotificationController::class, 'markAllAsRead'])
         ->name('notifications.readAll');
 

@@ -28,6 +28,7 @@ class AuthenticatedSessionController extends Controller
 
     $user = Auth::user();
 
+    // Check if user is a deactivated customer
     if (
         $user &&
         $user->role === 'customer' &&
@@ -35,9 +36,11 @@ class AuthenticatedSessionController extends Controller
     ) {
         Auth::logout();
 
+        //clear session data and regenerate token to prevent session fixation
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
+         // Show error message
         return back()->withErrors([
             'email' => 'Your account has been deactivated. Please contact hotel admin.',
         ]);

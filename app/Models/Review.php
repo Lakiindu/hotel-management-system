@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
+// Review model represents the reviews table
 class Review extends Model
 {
     protected $fillable = [

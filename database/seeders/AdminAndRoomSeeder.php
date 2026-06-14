@@ -7,10 +7,12 @@ use App\Models\Room;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 
+// Seeder for creating default admin account and sample rooms
 class AdminAndRoomSeeder extends Seeder
 {
     public function run(): void
     {
+        // Create admin user if it doesn't exist otherwise update existing admin details
         User::updateOrCreate(
             ['email' => 'admin@hotel.com'],
             [
@@ -23,6 +25,7 @@ class AdminAndRoomSeeder extends Seeder
             ]
         );
 
+        // Sample room data
         $rooms = [
             [
                 'room_number' => 'D101',
@@ -56,6 +59,7 @@ class AdminAndRoomSeeder extends Seeder
             ],
         ];
 
+        //Loop through each room and insert/update it
         foreach ($rooms as $room) {
             Room::updateOrCreate(
                 ['room_number' => $room['room_number']],

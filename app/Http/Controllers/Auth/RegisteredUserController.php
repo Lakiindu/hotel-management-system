@@ -14,6 +14,7 @@ use Illuminate\Validation\Rules;
 use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
 
+// Handles user registration
 class RegisteredUserController extends Controller
 {
     /**
@@ -29,6 +30,7 @@ class RegisteredUserController extends Controller
      *
      * @throws ValidationException
      */
+    // Validates inputs to  registration form
     public function store(Request $request): RedirectResponse
     {
         $request->validate([
@@ -38,6 +40,7 @@ class RegisteredUserController extends Controller
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
         ]);
 
+        // Create new user as a customer
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
@@ -47,8 +50,10 @@ class RegisteredUserController extends Controller
             'is_active' => true,
         ]);
 
+        // Notify all admins about the new customer registration
         $admins = User::where('role', 'admin')->get();
 
+        // Create a notification for each admin
         foreach ($admins as $admin) {
             Notification::create([
                 'user_id' => $admin->id,
@@ -60,8 +65,10 @@ class RegisteredUserController extends Controller
 
         event(new Registered($user));
 
+        // Log the new user in automatically
         Auth::login($user);
 
+        // Redirect to dashboard after successful registration
         return redirect(route('dashboard', absolute: false));
     }
 }

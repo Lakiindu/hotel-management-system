@@ -553,7 +553,6 @@
     </button>
 
 </form>
-
             </div>
 
         </div>
@@ -562,55 +561,196 @@
 
 </section>
 
-<footer class="bg-slate-900 border-t border-slate-800">
+<footer class="bg-gradient-to-r from-slate-950 via-slate-900 to-slate-950 border-t border-slate-800">
 
-    <div class="max-w-7xl mx-auto px-6 py-16 grid md:grid-cols-4 gap-10">
+    <div class="max-w-7xl mx-auto px-6 py-20">
 
-        <div>
-            <h3 class="text-3xl font-extrabold text-white mb-4">
-                {{ $footer->title ?? 'RoyalStay.' }}
-            </h3>
+        <div class="grid lg:grid-cols-5 gap-12">
 
-            <p class="text-slate-400">
-            {{ $footer->content ?? 'Luxury hotel experience with premium facilities and secure online booking.' }}           
-         </p>
-        </div>
+            {{-- Brand --}}
+            <div class="lg:col-span-2">
 
-        <div>
-            <h4 class="text-white font-bold mb-4">Quick Links</h4>
+                <h3 class="text-4xl font-extrabold text-white mb-4">
+                {{ $footer->title ?? 'RoyalStay Hotel & Resort' }}
+                    <span class="text-amber-400">.</span>
+                </h3>
 
-            <div class="space-y-2 text-slate-400">
-                <a href="#about" class="block">About</a>
-                <a href="#rooms" class="block">Rooms</a>
-                <a href="#services" class="block">Services</a>
-                <a href="#contact" class="block">Contact</a>
+                <div class="w-20 h-1 bg-amber-400 rounded-full mb-6"></div>
+
+                <p class="text-slate-400 leading-relaxed mb-6">
+                    {{ $footer->content ?? 'Experience luxury, comfort and exceptional hospitality with RoyalStay. Book your dream stay with premium facilities and world-class service.' }}
+                </p>
+
+                <div class="flex items-center gap-8 text-slate-300">
+
+                    <div>
+                        <h5 class="text-2xl font-bold text-amber-400">50+</h5>
+                        <p class="text-sm">Luxury Rooms</p>
+                    </div>
+
+                    <div>
+                        <h5 class="text-2xl font-bold text-amber-400">24/7</h5>
+                        <p class="text-sm">Support</p>
+                    </div>
+
+                    <div>
+                        <h5 class="text-2xl font-bold text-amber-400">5★</h5>
+                        <p class="text-sm">Service</p>
+                    </div>
+
+                </div>
+
             </div>
-        </div>
 
-        <div>
-            <h4 class="text-white font-bold mb-4">Contact</h4>
+            {{-- Quick Links --}}
+            <div>
 
-            <div class="space-y-2 text-slate-400">
-            <p>{{ $contactParts[0] ?? 'Malabe, Sri Lanka' }}</p>
-            <p>{{ $contactParts[1] ?? '+94 77 651 4545' }}</p>
-            <p>{{ $contactParts[2] ?? 'info@royalstay.com' }}</p>
+                <h4 class="text-white font-bold text-lg mb-5">
+                    Quick Links
+                </h4>
+
+                <div class="space-y-3">
+
+                    <a href="#about"
+                        class="block text-slate-400 hover:text-amber-400 transition duration-300">
+                        About Us
+                    </a>
+
+                    <a href="#rooms"
+                        class="block text-slate-400 hover:text-amber-400 transition duration-300">
+                        Rooms
+                    </a>
+
+                    <a href="#services"
+                        class="block text-slate-400 hover:text-amber-400 transition duration-300">
+                        Services
+                    </a>
+
+                    <a href="#gallery"
+                        class="block text-slate-400 hover:text-amber-400 transition duration-300">
+                        Gallery
+                    </a>
+
+                    <a href="#contact"
+                        class="block text-slate-400 hover:text-amber-400 transition duration-300">
+                        Contact
+                    </a>
+
+                </div>
+
             </div>
-        </div>
 
-        <div>
-            <h4 class="text-white font-bold mb-4">Follow Us</h4>
+            {{-- Why Choose Us --}}
+            <div>
 
-            <div class="flex gap-4 text-2xl text-amber-400">
-                <i class="fab fa-facebook"></i>
-                <i class="fab fa-instagram"></i>
-                <i class="fab fa-youtube"></i>
+                <h4 class="text-white font-bold text-lg mb-5">
+                    Why Choose Us
+                </h4>
+
+                <div class="space-y-3 text-slate-400">
+
+                    <p>
+                        <i class="fa-solid fa-bed text-amber-400 mr-2"></i>
+                        Luxury Rooms
+                    </p>
+
+                    <p>
+                        <i class="fa-solid fa-headset text-amber-400 mr-2"></i>
+                        24/7 Service
+                    </p>
+
+                    <p>
+                        <i class="fa-solid fa-shield-halved text-amber-400 mr-2"></i>
+                        Secure Booking
+                    </p>
+
+                    <p>
+                        <i class="fa-solid fa-utensils text-amber-400 mr-2"></i>
+                        Premium Dining
+                    </p>
+
+                </div>
+
             </div>
+
+            {{-- Contact --}}
+            <div>
+
+                <h4 class="text-white font-bold text-lg mb-5">
+                    Contact
+                </h4>
+
+                <div class="space-y-4 text-slate-400">
+
+    {{-- Location --}}
+    <p>
+        <i class="fa-solid fa-location-dot text-amber-400 mr-2"></i>
+        {{ $contactParts[0] ?? 'Malabe, Sri Lanka' }}
+    </p>
+
+    {{-- Phone --}}
+    <p>
+        <i class="fa-solid fa-phone text-amber-400 mr-2"></i>
+
+        <a href="tel:{{ preg_replace('/\s+/', '', $contactParts[1] ?? '+94765614545') }}"
+           class="hover:text-amber-400 transition">
+            {{ $contactParts[1] ?? '+94 76 561 4545' }}
+        </a>
+    </p>
+
+    {{-- Email --}}
+    <p>
+        <i class="fa-solid fa-envelope text-amber-400 mr-2"></i>
+
+        <a href="mailto:{{ $contactParts[2] ?? 'info@royalstay.com' }}"
+           class="hover:text-amber-400 transition">
+            {{ $contactParts[2] ?? 'info@royalstay.com' }}
+        </a>
+    </p>
+
+</div>
+
+            </div>
+
         </div>
 
     </div>
 
-    <div class="border-t border-slate-800 py-6 text-center text-slate-400">
-        © {{ date('Y') }} RoyalStay Hotel Management System. All Rights Reserved.
+    {{-- Bottom Bar --}}
+    <div class="border-t border-slate-800">
+
+        <div class="max-w-7xl mx-auto px-6 py-6 flex flex-col md:flex-row justify-between items-center gap-4">
+
+            <p class="text-slate-500 text-center md:text-left">
+                © {{ date('Y') }} RoyalStay Hotel & Resort. All Rights Reserved.
+            </p>
+
+            <div class="flex gap-5 text-xl">
+
+                <a href="https://www.facebook.com/share/1DqCn5Ubdz/"
+                    class="text-slate-400 hover:text-amber-400 hover:scale-125 transition duration-300">
+                    <i class="fab fa-facebook"></i>
+                </a>
+
+                <a href="https://www.instagram.com/_.lakiyaaa?igsh=MXA5MGs5ZXJsaHFiaQ=="
+                    class="text-slate-400 hover:text-amber-400 hover:scale-125 transition duration-300">
+                    <i class="fab fa-instagram"></i>
+                </a>
+
+                <a href="https://www.youtube.com/@LakinduRansika-sw2mc"
+                    class="text-slate-400 hover:text-amber-400 hover:scale-125 transition duration-300">
+                    <i class="fab fa-youtube"></i>
+                </a>
+
+                <a href="https://www.linkedin.com/in/lakindu-ransika-?lipi=urn%3Ali%3Apage%3Ad_flagship3_profile_view_base_contact_details%3BXJ6vf0c%2BQ5mp0iiURnxibA%3D%3D"
+                    class="text-slate-400 hover:text-amber-400 hover:scale-125 transition duration-300">
+                    <i class="fab fa-linkedin"></i>
+                </a>
+
+            </div>
+
+        </div>
+
     </div>
 
 </footer>

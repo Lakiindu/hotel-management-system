@@ -1,16 +1,18 @@
 @extends('layouts.admin')
 
+{{-- Browser tab title --}}
 @section('title', 'Edit Service')
 
 @section('content')
 
+{{-- Main edit form container --}}
 <div class="bg-white p-8 rounded-3xl shadow">
 
-```
 <h2 class="text-2xl font-bold mb-6">
     Edit Service
 </h2>
 
+{{-- Form used to update an existing service --}}
 <form method="POST"
       action="{{ route('admin.services.update', $service->id) }}"
       enctype="multipart/form-data">
@@ -18,8 +20,10 @@
     @csrf
     @method('PUT')
 
+     {{-- Title and Icon input fields --}}
     <div class="grid md:grid-cols-2 gap-6">
 
+    {{-- Service title field --}}
         <div>
             <label class="block mb-2 font-semibold">
                 Title
@@ -31,6 +35,7 @@
                    class="w-full border p-3 rounded-xl">
         </div>
 
+    {{-- Service icon field --}}
         <div>
             <label class="block mb-2 font-semibold">
                 Icon
@@ -45,6 +50,7 @@
 
     </div>
 
+    {{-- Service description field --}}
     <div class="mt-5">
         <label class="block mb-2 font-semibold">
             Description
@@ -55,6 +61,7 @@
                   class="w-full border p-3 rounded-xl">{{ $service->description }}</textarea>
     </div>
 
+    {{-- Display current service image if available --}}
     @if($service->image)
         <div class="mt-5">
             <label class="block mb-2 font-semibold">
@@ -67,6 +74,7 @@
         </div>
     @endif
 
+    {{-- Upload a new image to replace existing image --}}
     <div class="mt-5">
         <label class="block mb-2 font-semibold">
             Change Image
@@ -77,6 +85,7 @@
                class="w-full border p-3 rounded-xl">
     </div>
 
+    {{-- Active / Inactive status checkbox --}}
     <div class="mt-5">
         <label class="flex items-center gap-3">
             <input type="checkbox"
@@ -88,21 +97,21 @@
         </label>
     </div>
 
+    {{-- Form action buttons --}}
     <div class="mt-8 flex gap-4">
+        {{-- Submit updated service details --}}
         <button type="submit"
                 class="bg-blue-600 text-white px-6 py-3 rounded-xl font-bold hover:bg-blue-700 transition">
             Update Service
         </button>
 
+        {{-- Return to service list without saving --}}
         <a href="{{ route('admin.services.index') }}"
            class="bg-slate-500 text-white px-6 py-3 rounded-xl font-bold hover:bg-slate-600 transition">
             Cancel
         </a>
     </div>
-
 </form>
-```
-
 </div>
 
 @endsection

@@ -12,6 +12,7 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         $this->call([
+            // Creates default admin account and sample rooms
             AdminAndRoomSeeder::class,
         ]);
     }

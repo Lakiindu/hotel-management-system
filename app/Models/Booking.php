@@ -4,8 +4,10 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
+// Booking model represents the bookings table
 class Booking extends Model
 {
+    // Fields that can be inserted or updated
     protected $fillable = [
         'user_id',
         'room_id',
@@ -17,6 +19,7 @@ class Booking extends Model
         'total_amount',
     ];
 
+    // Automatically convert database values into PHP data types
     protected $casts = [
         'check_in_date' => 'date',
         'check_out_date' => 'date',

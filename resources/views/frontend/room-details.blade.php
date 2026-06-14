@@ -101,9 +101,9 @@
                 </a>
             @endauth
 
-            <a href="{{ route('rooms') }}"
+            <a href="{{ route('home') . '#rooms' }}"
                class="bg-slate-950 text-white px-7 py-3 rounded-2xl font-bold">
-                Back to Rooms
+                Back to Featured Rooms
             </a>
         </div>
 
