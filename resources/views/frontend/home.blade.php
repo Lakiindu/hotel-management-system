@@ -186,6 +186,77 @@
     </div>
 </section>
 
+{{-- Room Availability Search Bar --}}
+<section class="relative z-20 -mt-28 mb-12">
+        <div class="max-w-7xl mx-auto px-6">
+
+        <form method="GET"
+              action="{{ route('rooms') }}"
+              class="bg-white rounded-[2rem] shadow-2xl border-4 border-amber-400 p-4 grid lg:grid-cols-6 gap-4">
+
+            {{-- Room Type --}}
+            <div class="lg:col-span-2 flex items-center gap-3 border border-slate-200 rounded-2xl px-4 py-3">
+                <i class="fa-solid fa-bed text-slate-500 text-xl"></i>
+
+                <select name="type"
+                        class="w-full outline-none font-semibold text-slate-700 bg-transparent">
+                    <option value="">Select Room Type</option>
+
+                    @foreach($roomTypes as $type)
+                        <option value="{{ $type }}">
+                            {{ $type }}
+                        </option>
+                    @endforeach
+                </select>
+            </div>
+
+            {{-- Check-in Date --}}
+            <div class="flex items-center gap-3 border border-slate-200 rounded-2xl px-4 py-3">
+                <i class="fa-solid fa-calendar-days text-slate-500 text-xl"></i>
+
+                <input type="date"
+                       name="check_in"
+                       min="{{ date('Y-m-d') }}"
+                       class="w-full outline-none font-semibold text-slate-700 bg-transparent">
+            </div>
+
+            {{-- Check-out Date --}}
+            <div class="flex items-center gap-3 border border-slate-200 rounded-2xl px-4 py-3">
+                <i class="fa-solid fa-calendar-check text-slate-500 text-xl"></i>
+
+                <input type="date"
+                       name="check_out"
+                       min="{{ date('Y-m-d') }}"
+                       class="w-full outline-none font-semibold text-slate-700 bg-transparent">
+            </div>
+
+            {{-- Guests --}}
+            <div class="flex items-center gap-3 border border-slate-200 rounded-2xl px-4 py-3">
+                <i class="fa-solid fa-user-group text-slate-500 text-xl"></i>
+
+                <select name="guests"
+                        class="w-full outline-none font-semibold text-slate-700 bg-transparent">
+                    <option value="">Guests</option>
+                    <option value="1">1 Guest</option>
+                    <option value="2">2 Guests</option>
+                    <option value="3">3 Guests</option>
+                    <option value="4">4 Guests</option>
+                    <option value="5">5 Guests</option>
+                    <option value="6">6 Guests</option>
+                </select>
+            </div>
+
+            {{-- Search Button --}}
+            <button type="submit"
+                    class="bg-blue-600 text-white rounded-2xl font-extrabold text-lg hover:bg-blue-700 transition">
+                Search
+            </button>
+
+        </form>
+
+    </div>
+</section>
+
 <section id="about" class="py-24 bg-white">
     <div class="max-w-7xl mx-auto px-6 grid lg:grid-cols-2 gap-14 items-center">
 
