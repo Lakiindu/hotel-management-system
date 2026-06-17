@@ -131,9 +131,9 @@
         'https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?auto=format&fit=crop&w=1800&q=80',
         'https://images.unsplash.com/photo-1578683010236-d716f9a3f461?auto=format&fit=crop&w=1800&q=80'
      ]) }}"
-     style="background-image:
-     linear-gradient(rgba(2,6,23,0.72), rgba(2,6,23,0.82)),
-     url('{{ $heroImage }}');">
+    style="background-image:
+        linear-gradient(rgba(2,6,23,0.45), rgba(2,6,23,0.55)),
+        url('{{ $heroImage }}');">
 </div>
 
     <div class="absolute inset-0 bg-gradient-to-r from-slate-950/70 via-slate-950/30 to-transparent"></div>
@@ -862,7 +862,8 @@ if (heroSlider) {
 
         setTimeout(() => {
             heroSlider.style.backgroundImage =
-                `linear-gradient(rgba(2,6,23,0.72), rgba(2,6,23,0.82)), url('${heroImages[currentHero]}')`;
+`linear-gradient(rgba(2,6,23,0.45), rgba(2,6,23,0.55)),
+url('${heroImages[currentHero]}')`;
 
             heroSlider.style.opacity = 1;
         }, 600);
