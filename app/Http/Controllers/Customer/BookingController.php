@@ -24,10 +24,12 @@ class BookingController extends Controller
 
     public function store(Request $request, Room $room)
     {
+        // Only customers are allowed to create bookings
         if (Auth::user()->role !== 'customer') {
             return redirect()->route('admin.dashboard');
         }
 
+        //checks whether the data is correct before continuing
         $request->validate([
             'check_in_date' => 'required|date|after_or_equal:today',
             'check_out_date' => 'required|date|after:check_in_date',
@@ -35,27 +37,17 @@ class BookingController extends Controller
             'special_requests' => 'nullable|string|max:1000',
         ]);
 
+        // Prevent booking rooms that are unavailable
         if ($room->status !== 'available') {
             return back()->with('error', 'This room is not available right now.');
         }
 
+        // Check whether this room already has an active booking that overlaps with the selected dates
         $alreadyBooked = Booking::where('room_id', $room->id)
-            ->whereIn('status', ['pending', 'approved', 'checked_in'])
-            ->where(function ($query) use ($request) {
-                $query->whereBetween('check_in_date', [
-                    $request->check_in_date,
-                    $request->check_out_date,
-                ])
-                ->orWhereBetween('check_out_date', [
-                    $request->check_in_date,
-                    $request->check_out_date,
-                ])
-                ->orWhere(function ($query) use ($request) {
-                    $query->where('check_in_date', '<=', $request->check_in_date)
-                        ->where('check_out_date', '>=', $request->check_out_date);
-                });
-            })
-            ->exists();
+        ->whereIn('status', ['pending', 'approved', 'checked_in'])
+        ->where('check_in_date', '<', $request->check_out_date)
+        ->where('check_out_date', '>', $request->check_in_date)
+        ->exists();
 
         if ($alreadyBooked) {
             return back()->with('error', 'This room is already booked for the selected dates.');
@@ -64,6 +56,7 @@ class BookingController extends Controller
         $days = Carbon::parse($request->check_in_date)
             ->diffInDays(Carbon::parse($request->check_out_date));
 
+            // Calculate total booking cost
         $totalAmount = $days * $room->price_per_night;
 
         $booking = Booking::create([
@@ -80,6 +73,7 @@ class BookingController extends Controller
         $admins = User::where('role', 'admin')->get();
 
         foreach ($admins as $admin) {
+            // Notify all adminis about the new booking
             Notification::create([
                 'user_id' => $admin->id,
                 'title' => 'New Booking',
@@ -88,6 +82,8 @@ class BookingController extends Controller
             ]);
         }
 
+
+        // Redirect customer back to the bookings page with a success message
         return redirect()->route('customer.bookings.index')
             ->with('success', 'Booking submitted successfully. Waiting for admin approval.');
     }

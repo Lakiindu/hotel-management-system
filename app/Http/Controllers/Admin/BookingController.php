@@ -10,10 +10,13 @@ use Illuminate\Http\Request;
 
 class BookingController extends Controller
 {
+    // Display all bookings in the admin panel
     public function index(Request $request)
     {
+        // Get selected booking status filter from request
         $status = $request->status;
 
+         // Get bookings with related customer and room details
         $bookings = Booking::with(['user', 'room'])
             ->when($status, function ($query) use ($status) {
                 $query->where('status', $status);
@@ -21,14 +24,18 @@ class BookingController extends Controller
             ->latest()
             ->paginate(10);
 
+        // Send bookings data to admin booking page
         return view('admin.bookings.index', compact('bookings', 'status'));
     }
 
+    // Load bookings using AJAX for search/filter without refreshing the page
     public function ajaxBookings(Request $request)
     {
+        // Get search keyword and selected status
         $search = $request->search;
         $status = $request->status;
 
+        // Search bookings by customer name/email or room number/type
         $bookings = Booking::with(['user', 'room'])
             ->when($search, function ($query) use ($search) {
                 $query->where(function ($q) use ($search) {
@@ -42,28 +49,35 @@ class BookingController extends Controller
                     });
                 });
             })
+
+            // Filter bookings by selected status
             ->when($status, function ($query) use ($status) {
                 $query->where('status', $status);
             })
             ->latest()
             ->get();
 
+            // Return booking data as JSON for AJAX
         return response()->json([
             'success' => true,
             'bookings' => $bookings,
         ]);
     }
 
+    // Update booking status from admin panel
     public function updateStatus(Request $request, Booking $booking)
     {
+        // Validate allowed booking status values
         $request->validate([
             'status' => 'required|in:approved,cancelled,checked_in,checked_out,completed',
         ]);
 
+        // Update booking status
         $booking->update([
             'status' => $request->status,
         ]);
 
+        // If booking is approved, create payment record and notify customer
         if ($request->status === 'approved') {
             Payment::firstOrCreate(
                 [
@@ -84,6 +98,7 @@ class BookingController extends Controller
             ]);
         }
 
+        // If booking is cancelled, notify customer
         if ($request->status === 'cancelled') {
             Notification::create([
                 'user_id' => $booking->user_id,
@@ -93,6 +108,7 @@ class BookingController extends Controller
             ]);
         }
 
+        // If customer checks in, mark room as occupied and notify customer
         if ($request->status === 'checked_in') {
             $booking->room->update([
                 'status' => 'occupied',
@@ -106,6 +122,7 @@ class BookingController extends Controller
             ]);
         }
 
+        // If customer checks out, notify customer
         if ($request->status === 'checked_out') {
             Notification::create([
                 'user_id' => $booking->user_id,
@@ -115,6 +132,7 @@ class BookingController extends Controller
             ]);
         }
 
+        // Make room available again after checkout, completion or cancellation
         if (
             $request->status === 'checked_out' ||
             $request->status === 'completed' ||
@@ -125,6 +143,7 @@ class BookingController extends Controller
             ]);
         }
 
+        // Return JSON response for AJAX status updates
         if ($request->expectsJson()) {
             return response()->json([
                 'success' => true,
@@ -133,6 +152,7 @@ class BookingController extends Controller
             ]);
         }
 
+        // Redirect back for normal form submission
         return redirect()
             ->route('admin.bookings.index')
             ->with('success', 'Booking status updated successfully.');
