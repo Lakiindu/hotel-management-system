@@ -10,6 +10,9 @@ use Illuminate\Http\Request;
 use App\Models\Notification;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\BookingSubmittedMail;
+use App\Mail\BookingRequestReceivedMail;
 
 class BookingController extends Controller
 {
@@ -24,12 +27,10 @@ class BookingController extends Controller
 
     public function store(Request $request, Room $room)
     {
-        // Only customers are allowed to create bookings
         if (Auth::user()->role !== 'customer') {
             return redirect()->route('admin.dashboard');
         }
 
-        //checks whether the data is correct before continuing
         $request->validate([
             'check_in_date' => 'required|date|after_or_equal:today',
             'check_out_date' => 'required|date|after:check_in_date',
@@ -37,17 +38,15 @@ class BookingController extends Controller
             'special_requests' => 'nullable|string|max:1000',
         ]);
 
-        // Prevent booking rooms that are unavailable
         if ($room->status !== 'available') {
             return back()->with('error', 'This room is not available right now.');
         }
 
-        // Check whether this room already has an active booking that overlaps with the selected dates
         $alreadyBooked = Booking::where('room_id', $room->id)
-        ->whereIn('status', ['pending', 'approved', 'checked_in'])
-        ->where('check_in_date', '<', $request->check_out_date)
-        ->where('check_out_date', '>', $request->check_in_date)
-        ->exists();
+            ->whereIn('status', ['pending', 'approved', 'checked_in'])
+            ->where('check_in_date', '<', $request->check_out_date)
+            ->where('check_out_date', '>', $request->check_in_date)
+            ->exists();
 
         if ($alreadyBooked) {
             return back()->with('error', 'This room is already booked for the selected dates.');
@@ -56,7 +55,6 @@ class BookingController extends Controller
         $days = Carbon::parse($request->check_in_date)
             ->diffInDays(Carbon::parse($request->check_out_date));
 
-            // Calculate total booking cost
         $totalAmount = $days * $room->price_per_night;
 
         $booking = Booking::create([
@@ -70,50 +68,54 @@ class BookingController extends Controller
             'total_amount' => $totalAmount,
         ]);
 
+        $booking->load('user', 'room');
+
+        // Send booking request received email to customer
+        Mail::to($booking->user->email)->send(new BookingRequestReceivedMail($booking));
+
         $admins = User::where('role', 'admin')->get();
 
         foreach ($admins as $admin) {
-            // Notify all adminis about the new booking
             Notification::create([
                 'user_id' => $admin->id,
                 'title' => 'New Booking',
                 'message' => 'A new booking has been received.',
                 'is_read' => false,
             ]);
+
+            Mail::to($admin->email)->send(new BookingSubmittedMail($booking));
         }
 
-
-        // Redirect customer back to the bookings page with a success message
         return redirect()->route('customer.bookings.index')
             ->with('success', 'Booking submitted successfully. Waiting for admin approval.');
     }
 
     public function index()
-{
-    $userId = Auth::id();
+    {
+        $userId = Auth::id();
 
-    $bookings = Booking::with(['room', 'review'])
-        ->where('user_id', $userId)
-        ->latest()
-        ->paginate(8);
+        $bookings = Booking::with(['room', 'review'])
+            ->where('user_id', $userId)
+            ->latest()
+            ->paginate(8);
 
-    $totalBookings = Booking::where('user_id', $userId)->count();
+        $totalBookings = Booking::where('user_id', $userId)->count();
 
-    $activeBookings = Booking::where('user_id', $userId)
-        ->whereIn('status', ['pending', 'approved', 'checked_in'])
-        ->count();
+        $activeBookings = Booking::where('user_id', $userId)
+            ->whereIn('status', ['pending', 'approved', 'checked_in'])
+            ->count();
 
-    $completedBookings = Booking::where('user_id', $userId)
-        ->where('status', 'completed')
-        ->count();
+        $completedBookings = Booking::where('user_id', $userId)
+            ->where('status', 'completed')
+            ->count();
 
-    return view('customer.bookings.index', compact(
-        'bookings',
-        'totalBookings',
-        'activeBookings',
-        'completedBookings'
-    ));
-}
+        return view('customer.bookings.index', compact(
+            'bookings',
+            'totalBookings',
+            'activeBookings',
+            'completedBookings'
+        ));
+    }
 
     public function show(Booking $booking)
     {

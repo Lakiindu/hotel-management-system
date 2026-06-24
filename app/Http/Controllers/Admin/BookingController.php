@@ -7,6 +7,9 @@ use App\Models\Booking;
 use App\Models\Payment;
 use App\Models\Notification;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\BookingApprovedMail;
+use App\Mail\BookingCancelledMail;
 
 class BookingController extends Controller
 {
@@ -16,7 +19,7 @@ class BookingController extends Controller
         // Get selected booking status filter from request
         $status = $request->status;
 
-         // Get bookings with related customer and room details
+        // Get bookings with related customer and room details
         $bookings = Booking::with(['user', 'room'])
             ->when($status, function ($query) use ($status) {
                 $query->where('status', $status);
@@ -57,7 +60,7 @@ class BookingController extends Controller
             ->latest()
             ->get();
 
-            // Return booking data as JSON for AJAX
+        // Return booking data as JSON for AJAX
         return response()->json([
             'success' => true,
             'bookings' => $bookings,
@@ -96,6 +99,11 @@ class BookingController extends Controller
                 'message' => 'Your booking has been approved.',
                 'is_read' => false,
             ]);
+
+            $booking->load('user', 'room');
+
+            // Send booking approval email to customer
+            Mail::to($booking->user->email)->send(new BookingApprovedMail($booking));
         }
 
         // If booking is cancelled, notify customer
@@ -106,6 +114,11 @@ class BookingController extends Controller
                 'message' => 'Your booking has been cancelled.',
                 'is_read' => false,
             ]);
+
+            $booking->load('user', 'room');
+
+            // Send booking cancellation email to customer
+            Mail::to($booking->user->email)->send(new BookingCancelledMail($booking));
         }
 
         // If customer checks in, mark room as occupied and notify customer

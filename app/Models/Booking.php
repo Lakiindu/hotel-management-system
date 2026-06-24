@@ -29,7 +29,7 @@ class Booking extends Model
     //Booking belongs to one user
     public function user()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class)->withTrashed();
     }
 
     //Booking belongs to one room

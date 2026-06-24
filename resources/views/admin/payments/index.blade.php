@@ -88,8 +88,8 @@
                         </td>
 
                         <td class="p-5">
-                            <p class="font-bold">{{ $payment->booking->user->name }}</p>
-                            <p class="text-sm text-slate-500">{{ $payment->booking->user->email }}</p>
+                            <p class="font-bold">{{ $payment->booking?->user?->name ?? 'Deleted User' }}</p>
+                            <p class="text-sm text-slate-500">{{ $payment->booking?->user?->email ?? '-' }}</p>
                         </td>
 
                         <td class="p-5">

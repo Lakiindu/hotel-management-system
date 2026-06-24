@@ -75,20 +75,20 @@
                         <td class="p-5">
                             <div class="flex items-center gap-4">
                                 <div class="w-12 h-12 rounded-2xl bg-amber-100 text-amber-600 flex items-center justify-center font-extrabold">
-                                    {{ strtoupper(substr($review->user->name, 0, 1)) }}
+                                    {{ strtoupper(substr($review->user?->name ?? 'D', 0, 1)) }}
                                 </div>
-
+ 
                                 <div>
                                     <p class="font-extrabold text-slate-900">
-                                        {{ $review->user->name }}
+                                        {{ $review->user?->name ?? 'Deleted User' }}
                                     </p>
 
                                     <p class="text-sm text-slate-500">
-                                        {{ $review->user->email }}
+                                        {{ $review->user?->email ?? '-' }}
                                     </p>
 
                                     <p class="text-xs text-slate-400">
-                                        Customer ID #{{ $review->user->id }}
+                                        Customer ID #{{ $review->user?->id ?? '-' }}
                                     </p>
                                 </div>
                             </div>

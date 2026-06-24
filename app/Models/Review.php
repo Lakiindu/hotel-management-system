@@ -18,7 +18,7 @@ class Review extends Model
     //Review belongs to one user
     public function user()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class)->withTrashed();
     }
 
     //Review belongs to one room

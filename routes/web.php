@@ -27,6 +27,10 @@ use App\Http\Controllers\Customer\ProfileController as CustomerProfileController
 // Authentication Controllers
 use Illuminate\Support\Facades\Route;
 
+// Mail
+use Illuminate\Support\Facades\Mail;
+use App\Mail\TestMail;
+
 // Public Frontend Routes
 // Home and Rooms pages
 Route::get('/', [FrontendController::class, 'home'])->name('home');
@@ -56,11 +60,11 @@ Route::get('/dashboard', [DashboardController::class, 'redirect'])
 // Notification Routes
 Route::middleware(['auth'])->group(function () {
 
-// Mark individual notification as read
+    // Mark individual notification as read
     Route::patch('/notifications/{notification}/read', [NotificationController::class, 'markAsRead'])
         ->name('notifications.read');
 
-// Mark all notifications as read
+    // Mark all notifications as read
     Route::patch('/notifications/read-all', [NotificationController::class, 'markAllAsRead'])
         ->name('notifications.readAll');
 

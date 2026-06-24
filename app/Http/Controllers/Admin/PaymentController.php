@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Models\Payment;
 use App\Models\Notification;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\PaymentConfirmedMail;
 
 class PaymentController extends Controller
 {
@@ -85,8 +87,11 @@ class PaymentController extends Controller
             'payment_date' => now(),
         ]);
 
-        // Load booking and customer relationship
-        $payment->load('booking.user');
+        // Load booking, customer and room details
+        $payment->load('booking.user', 'booking.room');
+
+        // Send payment confirmation email to customer
+        Mail::to($payment->booking->user->email)->send(new PaymentConfirmedMail($payment));
 
         // Send notification to the customer
         Notification::create([

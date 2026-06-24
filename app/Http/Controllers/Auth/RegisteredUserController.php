@@ -10,9 +10,11 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Validation\Rules;
 use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
+use App\Mail\WelcomeCustomerMail;
 
 // Handles user registration
 class RegisteredUserController extends Controller
@@ -30,7 +32,7 @@ class RegisteredUserController extends Controller
      *
      * @throws ValidationException
      */
-    // Validates inputs to  registration form
+    // Validates inputs to registration form
     public function store(Request $request): RedirectResponse
     {
         $request->validate([
@@ -62,6 +64,9 @@ class RegisteredUserController extends Controller
                 'is_read' => false,
             ]);
         }
+
+        // Send welcome email to the newly registered customer
+        Mail::to($user->email)->send(new WelcomeCustomerMail($user));
 
         event(new Registered($user));
 

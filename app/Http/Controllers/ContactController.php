@@ -6,6 +6,9 @@ use App\Models\Contact;
 use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\Notification;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\ContactReceivedMail;
+use App\Mail\ContactAdminMail;
 
 class ContactController extends Controller
 {
@@ -27,6 +30,9 @@ class ContactController extends Controller
             'status' => 'unread',
         ]);
 
+        // Send confirmation email to the visitor/customer
+        Mail::to($contact->email)->send(new ContactReceivedMail($contact));
+
         // Retrieve all admin accounts
         $admins = User::where('role', 'admin')->get();
 
@@ -39,7 +45,11 @@ class ContactController extends Controller
                 'url' => route('admin.contacts.index'),
                 'is_read' => false,
             ]);
+
+            // Send real email to each admin
+            Mail::to($admin->email)->send(new ContactAdminMail($contact));
         }
+
         // Redirect back to the contact section with a success message
         return redirect('/#contact')
             ->with('success', 'Your message has been sent successfully.');
