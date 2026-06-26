@@ -15,40 +15,29 @@ use App\Mail\PaymentSuccessfulMail;
 
 class PaymentController extends Controller
 {
-    // Display all payments that belong to the logged-in customer
     public function index()
     {
         $userId = Auth::id();
 
         $payments = Payment::with('booking.room')
-            ->whereHas('booking', function ($query) use ($userId) {
-                $query->where('user_id', $userId);
-            })
+            ->whereHas('booking', fn ($query) => $query->where('user_id', $userId))
             ->latest()
             ->paginate(8);
 
         $totalPaid = Payment::where('status', 'paid')
-            ->whereHas('booking', function ($query) use ($userId) {
-                $query->where('user_id', $userId);
-            })
+            ->whereHas('booking', fn ($query) => $query->where('user_id', $userId))
             ->sum('amount');
 
         $pendingAmount = Payment::where('status', 'pending')
-            ->whereHas('booking', function ($query) use ($userId) {
-                $query->where('user_id', $userId);
-            })
+            ->whereHas('booking', fn ($query) => $query->where('user_id', $userId))
             ->sum('amount');
 
         $paidCount = Payment::where('status', 'paid')
-            ->whereHas('booking', function ($query) use ($userId) {
-                $query->where('user_id', $userId);
-            })
+            ->whereHas('booking', fn ($query) => $query->where('user_id', $userId))
             ->count();
 
         $lastPayment = Payment::where('status', 'paid')
-            ->whereHas('booking', function ($query) use ($userId) {
-                $query->where('user_id', $userId);
-            })
+            ->whereHas('booking', fn ($query) => $query->where('user_id', $userId))
             ->latest('payment_date')
             ->first();
 
@@ -61,84 +50,144 @@ class PaymentController extends Controller
         ));
     }
 
-    // Handle payment method selection: cash or card
-    public function pay(Request $request, Payment $payment)
-    {
-        if ($payment->booking->user_id !== Auth::id()) {
-            abort(403);
-        }
+public function pay(Request $request, Payment $payment)
+{
+    if ($payment->booking->user_id !== Auth::id()) {
+        abort(403);
+    }
 
-        $request->validate([
-            'payment_method' => 'required|in:cash,card',
-        ]);
+    $request->validate([
+        'payment_method' => 'required|in:cash,card',
+    ]);
 
-        if ($request->payment_method === 'card') {
-            return redirect()->route('customer.payments.card', $payment->id);
-        }
-
+    if ($request->payment_method === 'card') {
         $payment->update([
-            'payment_method' => 'cash',
+            'payment_method' => 'card',
             'status' => 'pending',
             'payment_date' => null,
         ]);
 
-        return back()->with('success', 'Cash payment selected. Waiting for admin confirmation.');
+        return redirect()->route('customer.payments.payhere', $payment->id);
     }
 
-    // Show demo card payment form
-    public function cardForm(Payment $payment)
+    $payment->update([
+        'payment_method' => 'cash',
+        'status' => 'pending',
+        'payment_date' => null,
+    ]);
+
+    return back()->with('success', 'Cash payment selected. Waiting for admin confirmation.');
+}
+
+    public function payhereCheckout(Payment $payment)
     {
         if ($payment->booking->user_id !== Auth::id()) {
             abort(403);
         }
 
-        $payment->load('booking.room');
-
-        return view('customer.payments.card', compact('payment'));
-    }
-
-    // Process demo card payment
-    public function processCard(Request $request, Payment $payment)
-    {
-        if ($payment->booking->user_id !== Auth::id()) {
-            abort(403);
+        if ($payment->status === 'paid') {
+            return redirect()->route('customer.payments.invoice', $payment->id)
+                ->with('success', 'This payment is already completed.');
         }
 
-        $request->validate([
-            'card_holder' => 'required|string|max:255',
-            'card_number' => 'required|string|min:16|max:19',
-            'expiry_date' => 'required|string|max:10',
-            'cvv' => 'required|string|min:3|max:4',
-        ]);
-
-        $payment->update([
-            'payment_method' => 'card',
-            'status' => 'paid',
-            'payment_date' => Carbon::now(),
-        ]);
-
-        // Load booking, customer and room details for email and notification
         $payment->load('booking.user', 'booking.room');
 
-        // Send payment success email to customer
-        Mail::to($payment->booking->user->email)->send(new PaymentSuccessfulMail($payment));
+        $merchantId = config('payhere.merchant_id');
+        $merchantSecret = config('payhere.merchant_secret');
 
-        $admins = User::where('role', 'admin')->get();
-
-        foreach ($admins as $admin) {
-            Notification::create([
-                'user_id' => $admin->id,
-                'title' => 'Payment Received',
-                'message' => 'Rs. ' . number_format($payment->amount, 2) . ' payment received from ' . $payment->booking->user->name . '.',
-                'is_read' => false,
-            ]);
+        if (!$merchantId || !$merchantSecret) {
+            return redirect()->route('customer.payments.index')
+                ->with('error', 'PayHere credentials are missing. Please check your .env file.');
         }
 
-        return redirect()->route('customer.payments.invoice', $payment->id)
-            ->with('success', 'Demo card payment completed successfully.');
+        $orderId = 'PAY-' . $payment->id;
+        $amount = number_format((float) $payment->amount, 2, '.', '');
+        $currency = 'LKR';
+
+        $hash = strtoupper(md5(
+            $merchantId .
+            $orderId .
+            $amount .
+            $currency .
+            strtoupper(md5($merchantSecret))
+        ));
+
+        return view('customer.payments.payhere-checkout', compact(
+            'payment',
+            'merchantId',
+            'orderId',
+            'amount',
+            'currency',
+            'hash'
+        ));
     }
 
-    // Show invoice page for a payment
+    public function payhereSuccess(Payment $payment)
+    {
+        if ($payment->booking->user_id !== Auth::id()) {
+            abort(403);
+        }
+
+        $payment->refresh();
+
+        return redirect()->route('customer.payments.invoice', $payment->id)
+            ->with('success', 'PayHere payment finished. If the status is still pending, refresh after a few seconds.');
+    }
+
+    public function payhereCancel(Payment $payment)
+    {
+        if ($payment->booking->user_id !== Auth::id()) {
+            abort(403);
+        }
+
+        return redirect()->route('customer.payments.index')
+            ->with('error', 'PayHere payment was cancelled.');
+    }
+
+    public function payhereNotify(Request $request)
+    {
+        $merchantSecret = config('payhere.merchant_secret');
+
+        $localMd5sig = strtoupper(md5(
+            $request->merchant_id .
+            $request->order_id .
+            $request->payhere_amount .
+            $request->payhere_currency .
+            $request->status_code .
+            strtoupper(md5($merchantSecret))
+        ));
+
+        if ($localMd5sig === $request->md5sig && (int) $request->status_code === 2) {
+            $paymentId = str_replace('PAY-', '', $request->order_id);
+
+            $payment = Payment::with('booking.user', 'booking.room')->find($paymentId);
+
+            if ($payment && $payment->status !== 'paid') {
+                $payment->update([
+                    'payment_method' => 'card',
+                    'status' => 'paid',
+                    'payment_date' => Carbon::now(),
+                ]);
+
+                Mail::to($payment->booking->user->email)
+                    ->send(new PaymentSuccessfulMail($payment));
+
+                $admins = User::where('role', 'admin')->get();
+
+                foreach ($admins as $admin) {
+                    Notification::create([
+                        'user_id' => $admin->id,
+                        'title' => 'Payment Received',
+                        'message' => 'Rs. ' . number_format($payment->amount, 2) . ' payment received from ' . $payment->booking->user->name . '.',
+                        'is_read' => false,
+                    ]);
+                }
+            }
+        }
+
+        return response('OK', 200);
+    }
+
     public function invoice(Payment $payment)
     {
         if ($payment->booking->user_id !== Auth::id()) {
@@ -150,7 +199,6 @@ class PaymentController extends Controller
         return view('customer.payments.invoice', compact('payment'));
     }
 
-    // Download invoice as PDF
     public function downloadInvoicePdf(Payment $payment)
     {
         if ($payment->booking->user_id !== Auth::id()) {
@@ -164,7 +212,6 @@ class PaymentController extends Controller
         return $pdf->download('invoice-' . $payment->id . '.pdf');
     }
 
-    // Download invoice as CSV file
     public function downloadInvoiceCsv(Payment $payment)
     {
         if ($payment->booking->user_id !== Auth::id()) {

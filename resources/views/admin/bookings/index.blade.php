@@ -198,12 +198,16 @@ function statusClass(status) {
 }
 
 function formatStatus(status) {
-    return status.replace('_', ' ').replace(/\b\w/g, char => char.toUpperCase());
+    return status ? status.replace('_', ' ').replace(/\b\w/g, char => char.toUpperCase()) : '-';
+}
+
+function formatDate(dateValue) {
+    return dateValue ? dateValue.substring(0, 10) : '-';
 }
 
 function attachBookingUpdateEvents() {
     document.querySelectorAll('.update-btn').forEach(button => {
-        button.addEventListener('click', function () {
+        button.onclick = function () {
             Swal.fire({
                 title: 'Update booking status?',
                 icon: 'question',
@@ -216,30 +220,45 @@ function attachBookingUpdateEvents() {
                     const formData = new FormData(form);
 
                     fetch(form.action, {
-                        method: 'POST',
-                        headers: {
-                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
-                            'Accept': 'application/json'
-                        },
-                        body: formData
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.success) {
-                            Swal.fire('Success', data.message, 'success')
-                                .then(() => loadAdminBookings());
-                        } else {
-                            Swal.fire('Error', 'Could not update booking status.', 'error');
-                        }
-                    })
-                    .catch(() => {
-                        Swal.fire('Error', 'Something went wrong.', 'error');
-                    });
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                    'Accept': 'application/json'
+                },
+                body: formData
+            })
+            .then(async response => {
+                const data = await response.json();
+
+                if (!response.ok) {
+                    console.log(data);
+
+                    let errorMessage = data.message || 'Could not update booking status.';
+
+                    if (data.errors) {
+                        errorMessage = Object.values(data.errors).flat().join('\n');
+                    }
+
+                    Swal.fire('Error', errorMessage, 'error');
+                    return;
                 }
+
+                if (data.success) {
+                    Swal.fire('Success', data.message, 'success')
+                        .then(() => window.location.reload());
+                } else {
+                    Swal.fire('Error', 'Could not update booking status.', 'error');
+                }
+            })
+            .catch(error => {
+                console.log(error);
+                Swal.fire('Error', 'Something went wrong. Check console/logs.', 'error');
             });
-        });
-    });
-}
+                            }
+                        });
+                    };
+                });
+            }
 
 function loadAdminBookings() {
     const search = bookingSearch.value;
@@ -261,7 +280,7 @@ function loadAdminBookings() {
         bookingsTableBody.innerHTML = '';
         bookingsPagination.innerHTML = '';
 
-        if (data.bookings.length === 0) {
+        if (!data.success || data.bookings.length === 0) {
             bookingsTableBody.innerHTML = `
                 <tr>
                     <td colspan="8" class="p-10 text-center text-slate-500">
@@ -273,27 +292,32 @@ function loadAdminBookings() {
         }
 
         data.bookings.forEach(booking => {
+            const userName = booking.user ? booking.user.name : 'Deleted User';
+            const userEmail = booking.user ? booking.user.email : '-';
+            const roomType = booking.room ? booking.room.room_type : 'Deleted Room';
+            const roomNumber = booking.room ? booking.room.room_number : '-';
+
             bookingsTableBody.innerHTML += `
                 <tr class="border-b hover:bg-slate-50 transition">
                     <td class="p-5">
                         <p class="font-extrabold text-blue-600">#${booking.id}</p>
-                        <p class="text-sm text-slate-500">${booking.created_at ? booking.created_at.substring(0, 10) : '-'}</p>
+                        <p class="text-sm text-slate-500">${formatDate(booking.created_at)}</p>
                     </td>
 
                     <td class="p-5">
-                        <p class="font-bold">${booking.user.name}</p>
-                        <p class="text-sm text-slate-500">${booking.user.email}</p>
+                        <p class="font-bold">${userName}</p>
+                        <p class="text-sm text-slate-500">${userEmail}</p>
                     </td>
 
                     <td class="p-5">
-                        <p class="font-bold">${booking.room.room_type}</p>
-                        <p class="text-sm text-slate-500">Room No: ${booking.room.room_number}</p>
+                        <p class="font-bold">${roomType}</p>
+                        <p class="text-sm text-slate-500">Room No: ${roomNumber}</p>
                     </td>
 
                     <td class="p-5 text-sm">
                         <div class="bg-slate-50 rounded-2xl p-3">
-                            <p><span class="text-slate-500">In:</span> <strong>${booking.check_in_date}</strong></p>
-                            <p><span class="text-slate-500">Out:</span> <strong>${booking.check_out_date}</strong></p>
+                            <p><span class="text-slate-500">In:</span> <strong>${formatDate(booking.check_in_date)}</strong></p>
+                            <p><span class="text-slate-500">Out:</span> <strong>${formatDate(booking.check_out_date)}</strong></p>
                         </div>
                     </td>
 

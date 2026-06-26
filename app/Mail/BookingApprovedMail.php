@@ -27,11 +27,14 @@ class BookingApprovedMail extends Mailable
 
     public function content(): Content
     {
-
-    return new Content(
-        view: 'emails.booking-approved',
-    );
-
+        return new Content(
+            view: 'emails.booking-approved',
+            with: [
+                'booking' => $this->booking,
+                'emailTitle' => 'Booking Approved',
+                'emailSubtitle' => 'Booking Approval Confirmation',
+            ],
+        );
     }
 
     public function attachments(): array

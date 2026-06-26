@@ -1,6 +1,9 @@
 <?php
 
 // Web Routes
+use Illuminate\Support\Facades\Route;
+
+// Controllers
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\FrontendController;
 use App\Http\Controllers\NotificationController;
@@ -24,62 +27,74 @@ use App\Http\Controllers\Customer\PaymentController as CustomerPaymentController
 use App\Http\Controllers\Customer\ReviewController as CustomerReviewController;
 use App\Http\Controllers\Customer\ProfileController as CustomerProfileController;
 
-// Authentication Controllers
-use Illuminate\Support\Facades\Route;
-
-// Mail
+// Mail Testing
 use Illuminate\Support\Facades\Mail;
 use App\Mail\TestMail;
 
-// Public Frontend Routes
-// Home and Rooms pages
+/*
+|--------------------------------------------------------------------------
+| Public Frontend Routes
+|--------------------------------------------------------------------------
+*/
+
+// Home page
 Route::get('/', [FrontendController::class, 'home'])->name('home');
 
-// Rooms listing and details pages
-Route::get('/rooms', [FrontendController::class, 'rooms'])
-    ->name('rooms');
+// Rooms listing page
+Route::get('/rooms', [FrontendController::class, 'rooms'])->name('rooms');
 
-// Room details page with dynamic room ID
-Route::get('/rooms/{room}', [FrontendController::class, 'roomDetails'])
-    ->name('rooms.details');
+// Room details page
+Route::get('/rooms/{room}', [FrontendController::class, 'roomDetails'])->name('rooms.details');
 
-// Contact Form Route
-// Handles contact form submissions from the frontend
-Route::post('/contact', [ContactController::class, 'store'])
-    ->name('contact.store');
+// Contact form submit
+Route::post('/contact', [ContactController::class, 'store'])->name('contact.store');
 
-// Public AJAX Rooms Route
-Route::get('/ajax/rooms', [FrontendController::class, 'ajaxRooms'])
-    ->name('ajax.rooms');
+// Public AJAX rooms route
+Route::get('/ajax/rooms', [FrontendController::class, 'ajaxRooms'])->name('ajax.rooms');
 
-// Dashboard Redirect
+/*
+|--------------------------------------------------------------------------
+| Dashboard Redirect
+|--------------------------------------------------------------------------
+*/
+
 Route::get('/dashboard', [DashboardController::class, 'redirect'])
     ->middleware(['auth', 'verified'])
     ->name('dashboard');
 
-// Notification Routes
+/*
+|--------------------------------------------------------------------------
+| Notification Routes
+|--------------------------------------------------------------------------
+*/
+
 Route::middleware(['auth'])->group(function () {
 
-    // Mark individual notification as read
+    // Mark one notification as read
     Route::patch('/notifications/{notification}/read', [NotificationController::class, 'markAsRead'])
         ->name('notifications.read');
 
     // Mark all notifications as read
     Route::patch('/notifications/read-all', [NotificationController::class, 'markAllAsRead'])
         ->name('notifications.readAll');
-
 });
 
-// Admin Routes
+/*
+|--------------------------------------------------------------------------
+| Admin Routes
+|--------------------------------------------------------------------------
+*/
+
 Route::middleware(['auth', 'admin'])
     ->prefix('admin')
     ->name('admin.')
     ->group(function () {
 
+        // Admin dashboard
         Route::get('/dashboard', [DashboardController::class, 'adminDashboard'])
             ->name('dashboard');
 
-        // Admin AJAX Routes
+        // Admin AJAX routes
         Route::get('/ajax/rooms', [RoomController::class, 'ajaxRooms'])
             ->name('ajax.rooms');
 
@@ -92,8 +107,10 @@ Route::middleware(['auth', 'admin'])
         Route::get('/ajax/payments', [AdminPaymentController::class, 'ajaxPayments'])
             ->name('ajax.payments');
 
+        // Room management
         Route::resource('rooms', RoomController::class);
 
+        // Customer management
         Route::get('/customers', [CustomerController::class, 'index'])
             ->name('customers.index');
 
@@ -103,24 +120,28 @@ Route::middleware(['auth', 'admin'])
         Route::patch('/customers/{user}/toggle-status', [CustomerController::class, 'toggleStatus'])
             ->name('customers.toggleStatus');
 
+        // Booking management
         Route::get('/bookings', [AdminBookingController::class, 'index'])
             ->name('bookings.index');
 
         Route::patch('/bookings/{booking}/status', [AdminBookingController::class, 'updateStatus'])
             ->name('bookings.updateStatus');
 
+        // Payment management
         Route::get('/payments', [AdminPaymentController::class, 'index'])
             ->name('payments.index');
 
         Route::patch('/payments/{payment}/confirm', [AdminPaymentController::class, 'confirm'])
             ->name('payments.confirm');
 
+        // Review management
         Route::get('/reviews', [AdminReviewController::class, 'index'])
             ->name('reviews.index');
 
         Route::delete('/reviews/{review}', [AdminReviewController::class, 'destroy'])
             ->name('reviews.destroy');
 
+        // Contact message management
         Route::get('/contacts', [AdminContactController::class, 'index'])
             ->name('contacts.index');
 
@@ -130,6 +151,7 @@ Route::middleware(['auth', 'admin'])
         Route::delete('/contacts/{contact}', [AdminContactController::class, 'destroy'])
             ->name('contacts.destroy');
 
+        // Reports
         Route::get('/reports', [ReportController::class, 'index'])
             ->name('reports.index');
 
@@ -152,15 +174,22 @@ Route::middleware(['auth', 'admin'])
         Route::resource('hotel-contents', HotelContentController::class);
     });
 
-// Customer Routes
+/*
+|--------------------------------------------------------------------------
+| Customer Routes
+|--------------------------------------------------------------------------
+*/
+
 Route::middleware(['auth'])
     ->prefix('customer')
     ->name('customer.')
     ->group(function () {
 
+        // Customer dashboard
         Route::get('/dashboard', [DashboardController::class, 'customerDashboard'])
             ->name('dashboard');
 
+        // Booking routes
         Route::get('/rooms/{room}/book', [CustomerBookingController::class, 'create'])
             ->name('bookings.create');
 
@@ -176,27 +205,44 @@ Route::middleware(['auth'])
         Route::patch('/bookings/{booking}/cancel', [CustomerBookingController::class, 'cancel'])
             ->name('bookings.cancel');
 
+        // Review routes
         Route::get('/bookings/{booking}/review', [CustomerReviewController::class, 'create'])
             ->name('reviews.create');
 
         Route::post('/bookings/{booking}/review', [CustomerReviewController::class, 'store'])
             ->name('reviews.store');
 
+        // Payment routes
         Route::get('/payments', [CustomerPaymentController::class, 'index'])
             ->name('payments.index');
 
         Route::patch('/payments/{payment}/pay', [CustomerPaymentController::class, 'pay'])
             ->name('payments.pay');
 
+        // Invoice page
         Route::get('/payments/{payment}/invoice', [CustomerPaymentController::class, 'invoice'])
             ->name('payments.invoice');
 
-        Route::get('/payments/{payment}/card', [CustomerPaymentController::class, 'cardForm'])
-            ->name('payments.card');
+        // PayHere Sandbox checkout page
+        Route::get('/payments/{payment}/payhere', [CustomerPaymentController::class, 'payhereCheckout'])
+            ->name('payments.payhere');
 
-        Route::post('/payments/{payment}/card', [CustomerPaymentController::class, 'processCard'])
-            ->name('payments.card.process');
+        // PayHere success redirect
+        Route::get('/payments/{payment}/success', [CustomerPaymentController::class, 'payhereSuccess'])
+            ->name('payments.success');
 
+        // PayHere cancel redirect
+        Route::get('/payments/{payment}/cancel', [CustomerPaymentController::class, 'payhereCancel'])
+            ->name('payments.cancelPayhere');
+
+        // Invoice downloads
+        Route::get('/payments/{payment}/invoice/pdf', [CustomerPaymentController::class, 'downloadInvoicePdf'])
+            ->name('payments.invoice.pdf');
+
+        Route::get('/payments/{payment}/invoice/csv', [CustomerPaymentController::class, 'downloadInvoiceCsv'])
+            ->name('payments.invoice.csv');
+
+        // Profile routes
         Route::get('/profile', [CustomerProfileController::class, 'edit'])
             ->name('profile.edit');
 
@@ -205,12 +251,24 @@ Route::middleware(['auth'])
 
         Route::put('/profile/password', [CustomerProfileController::class, 'updatePassword'])
             ->name('profile.password');
-
-        Route::get('/payments/{payment}/invoice/pdf', [CustomerPaymentController::class, 'downloadInvoicePdf'])
-            ->name('payments.invoice.pdf');
-
-        Route::get('/payments/{payment}/invoice/csv', [CustomerPaymentController::class, 'downloadInvoiceCsv'])
-            ->name('payments.invoice.csv');
     });
+
+/*
+|--------------------------------------------------------------------------
+| PayHere Public Notify Route
+|--------------------------------------------------------------------------
+| PayHere sends payment status to this route.
+| This route must be outside the auth customer group.
+|--------------------------------------------------------------------------
+*/
+
+Route::post('/payhere/notify', [CustomerPaymentController::class, 'payhereNotify'])
+    ->name('payhere.notify');
+
+/*
+|--------------------------------------------------------------------------
+| Authentication Routes
+|--------------------------------------------------------------------------
+*/
 
 require __DIR__ . '/auth.php';

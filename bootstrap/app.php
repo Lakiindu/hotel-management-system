@@ -25,16 +25,19 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
 
-    // Register custom middleware
-    ->withMiddleware(function ($middleware) {
+    // Register custom middleware and CSRF exceptions
+    ->withMiddleware(function (Middleware $middleware) {
 
+        // Create middleware alias named "admin"
         $middleware->alias([
-
-            // Create middleware alias named "admin"
             'admin' => \App\Http\Middleware\AdminMiddleware::class,
-
         ]);
 
+        // Exclude PayHere notify URL from CSRF protection
+        // PayHere sends POST request from outside your Laravel app
+        $middleware->validateCsrfTokens(except: [
+            'payhere/notify',
+        ]);
     })
 
     // Configure exception handling
