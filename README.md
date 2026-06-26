@@ -13,9 +13,9 @@ Modern Hotel Management System built with Laravel, MySQL, Tailwind CSS and AJAX.
 
 # 🏨 Hotel Management System
 
-A modern Hotel Management System built using **Laravel 12**, **PHP**, **MySQL**, **Tailwind CSS**, **AJAX**, and **JavaScript**.
+A modern Hotel Management System built using **Laravel 12**, **PHP**, **MySQL**, **Tailwind CSS**, **AJAX**, **JavaScript**, **Google SMTP Email Services** and **PayHere Sandbox Payment Gateway**.
 
-The system provides a complete solution for hotel operations including room management, bookings, customer management, payments, reviews, reports, and website content management through dedicated **Admin** and **Customer** panels.
+The system provides a complete solution for hotel operations including room management, bookings, secure online payments, automated email notifications, customer management, reviews, reports and dynamic website content management through dedicated **Admin** and **Customer** panels.
 
 ---
 
@@ -42,6 +42,8 @@ The Hotel Management System is designed to simplify hotel operations and improve
 - Laravel 12
 - PHP 8+
 - MySQL
+- Google SMTP (Gmail)
+- PayHere Sandbox Payment Gateway
 
 ## Frontend
 
@@ -56,6 +58,7 @@ The Hotel Management System is designed to simplify hotel operations and improve
 - Git & GitHub
 - Composer
 - WAMP Server
+- ngrok (Local PayHere Callback Testing)
 
 ---
 
@@ -85,7 +88,8 @@ Customers can:
 - View Room Details
 - Make Room Bookings
 - Manage Bookings
-- Make Payments
+- Secure Card Payments via PayHere
+- Cash Payment Option
 - Submit Reviews
 - Manage Profile Information
 - Download Invoices
@@ -151,9 +155,13 @@ Customers can:
 
 ## Payment Management
 
-- Track Payments
-- Confirm Payments
-- Generate Invoices
+- PayHere Payment Monitoring
+- Cash Payment Confirmation
+- Automatic Card Payment Verification
+- Payment History
+- PDF Invoice Generation
+- CSV Invoice Export
+- Customer Payment Tracking
 
 ## Website Content Management
 
@@ -186,7 +194,9 @@ Customers can:
 - Room Management
 - Booking Management
 - Customer Management
-- Payment Management
+- Payment Gateway Integration
+- Invoice Management
+- Email Notification System
 - Review Management
 - Contact Management
 - Notification System
@@ -257,6 +267,28 @@ DB_PORT=3306
 DB_DATABASE=hotel_management
 DB_USERNAME=root
 DB_PASSWORD=
+```
+
+## Configure SMTP
+
+Update your `.env` file with your Gmail SMTP credentials.
+
+```env
+MAIL_MAILER=smtp
+MAIL_HOST=smtp.gmail.com
+MAIL_PORT=587
+MAIL_USERNAME=your_email@gmail.com
+MAIL_PASSWORD=your_app_password
+MAIL_ENCRYPTION=tls
+MAIL_FROM_ADDRESS=your_email@gmail.com
+MAIL_FROM_NAME="RoyalStay Hotel"
+```
+
+## Configure PayHere
+```env
+PAYHERE_MERCHANT_ID=your_merchant_id
+PAYHERE_MERCHANT_SECRET=your_merchant_secret
+PAYHERE_SANDBOX=true
 ```
 
 ## Run Database Migrations
