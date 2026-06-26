@@ -7,8 +7,13 @@ Modern Hotel Management System built with Laravel, MySQL, Tailwind CSS and AJAX.
 ![Laravel](https://img.shields.io/badge/Laravel-12-red)
 ![PHP](https://img.shields.io/badge/PHP-8+-blue)
 ![MySQL](https://img.shields.io/badge/MySQL-Database-orange)
+![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3.x-06B6D4)
+![AJAX](https://img.shields.io/badge/AJAX-Enabled-yellow)
+![SMTP](https://img.shields.io/badge/SMTP-Gmail-EA4335)
+![PayHere](https://img.shields.io/badge/PayHere-Sandbox-00A859)
 ![License](https://img.shields.io/badge/License-Educational-green)
-
+![GitHub last commit](https://img.shields.io/github/last-commit/Lakiindu/hotel-management-system)
+![GitHub repo size](https://img.shields.io/github/repo-size/Lakiindu/hotel-management-system)
 </div>
 
 # 🏨 Hotel Management System
